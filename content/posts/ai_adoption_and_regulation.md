@@ -1,7 +1,7 @@
 +++
 title = "AIの普及と規制"
 date = "2026-10-11T23:40:27+09:00"
-draft = true
+draft = false
 categories = ["思考"]
 tags = ["AI", "創造性", "自己認識", "意識", "主観経験", "記憶", "思考実験"]
 +++

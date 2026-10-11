@@ -17,4 +17,7 @@ page.section('3. 記事ファイル名を変更',
 page.section('4. 記事のタグを設定（2026-10-12）',
              page.p('既存の思考記事のタグと本文から提案した6つに、ユーザー指定の「意識」を追加。AI、創造性、自己認識、意識、主観経験、記憶、思考実験を設定した。変更前の本文も第3版として保存している。')
              + page.text_diff(page.read('3.md'), page.read('4.md')), group='記事ページ')
+page.section('5. 下書き設定を解除（2026-10-12）',
+             page.p('ユーザーの指示で draft を false に変更した。書式統一後の本文とタグは保持し、通常の公開用ビルドに含める。')
+             + page.text_diff(page.read('5.md'), page.read('6.md')), group='記事ページ')
 page.write(str(here / '制作過程.html'))
