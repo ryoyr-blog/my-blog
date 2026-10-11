@@ -21,4 +21,7 @@ page.section('4. 下書き設定を削除して公開対象にする',
 page.section('5. カテゴリとタグを設定',
              page.p('カテゴリを「思考」に設定。タグは題材の「欅坂46」「櫻坂46」「アイドル」、内省や議論の軸である「自己認識」「継続性」「批評」とした。本文は変更していない。')
              + page.text_diff(page.read('5.md'), page.read('6.md')), group='記事の分類')
+page.section('6. 記事タイトルを決定',
+             page.p('ユーザーが短い体言止めの候補から「欅坂46への未練」を選んだため、仮タイトルを変更した。本文とその他の設定は保持した。')
+             + page.text_diff(page.read('6.md'), page.read('7.md')), group='記事タイトル')
 page.write(str(here / '制作過程.html'))
