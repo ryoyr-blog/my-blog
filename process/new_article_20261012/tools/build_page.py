@@ -18,4 +18,7 @@ page.section('3. 語順の調整（第3版 → 第4版）',
 page.section('4. 下書き設定を削除して公開対象にする',
              page.p('ユーザーの指示で draft = true の行を削除した。本文とタイトル、カテゴリ、タグはそのまま保持し、通常のビルドで出力されることを確認する。')
              + page.text_diff(page.read('4.md'), page.read('5.md')), group='記事の公開')
+page.section('5. カテゴリとタグを設定',
+             page.p('カテゴリを「思考」に設定。タグは題材の「欅坂46」「櫻坂46」「アイドル」、内省や議論の軸である「自己認識」「継続性」「批評」とした。本文は変更していない。')
+             + page.text_diff(page.read('5.md'), page.read('6.md')), group='記事の分類')
 page.write(str(here / '制作過程.html'))
