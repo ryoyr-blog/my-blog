@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>テーマ未定の記事の制作過程</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Noto+Sans+JP:wght@400;700&display=swap">
+<style>
+/* 一列の作業メモ。絵は整数倍で、ぼかさず表示(~/game/art/雷の使い手/制作過程.html と同じ見た目) */
+:root{--bg:#eef0f4;--fg:#1d2230;--muted:#5a6275;--panel:#3c404e;--gold:#a8820f;--blue:#2b5fb8;
+--display:"DotGothic16",monospace;--body:"Noto Sans JP",system-ui,sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15171e;--fg:#e6e8ee;--muted:#9aa2b4;--panel:#3c404e;--gold:#e0b93a;--blue:#7aa6f0;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15171e;--fg:#e6e8ee;--muted:#9aa2b4;--panel:#3c404e;--gold:#e0b93a;--blue:#7aa6f0;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);line-height:1.7;margin:0}
+main{max-width:860px;margin:0 auto;padding-inline:16px;padding-block:32px 48px;display:grid;gap:40px}
+h1,h2{font-family:var(--display);font-weight:400;text-wrap:balance;margin:0}
+h1{font-size:1.9rem}h2{font-size:1.3rem}
+section{display:grid;gap:12px}
+p{margin:0;max-width:65ch}.muted{color:var(--muted);font-size:.92rem}
+figure{margin:0;background:var(--panel);border-radius:6px;overflow-x:auto}
+figure img{display:block;image-rendering:pixelated;max-width:100%;height:auto;margin:0 auto}
+/* 絵の説明(figcaption)は、暗い枠の上でも読めるように白にする(一覧の外に置いた1枚の絵や GIF も) */
+figure figcaption{padding:2px 6px 0;font-family:var(--display);color:#e6e8ee;font-size:.9rem;line-height:1.7;text-shadow:0 0 3px #000,0 0 3px #000}
+ul{margin:0;padding-left:1.2em}li{max-width:65ch}
+.ok{color:var(--blue)}.ng{color:var(--gold)}
+.block{display:grid;gap:10px;margin-top:6px}
+.block h3{font-family:var(--display);font-weight:400;font-size:1.05rem;margin:0}
+/* 絵は1マス=横幅の1/3。1枚・2枚のときも同じ大きさのまま中央にそろえる */
+.gallery{display:flex;flex-wrap:wrap;justify-content:center;gap:0;border-radius:6px;overflow:hidden;background:var(--panel)}
+.gallery figure{flex:0 0 calc(100%/3);min-width:0;position:relative;justify-items:center;border-radius:0;overflow:visible;align-content:start;display:grid;align-items:center}
+@media (max-width:520px){.gallery figure{flex-basis:100%}}
+.gallery figcaption{position:static;justify-self:start;padding:2px 6px 0;font-family:var(--display);color:#e6e8ee;font-size:.9rem;line-height:1.7;text-shadow:0 0 3px #000,0 0 3px #000}
+/* 絵の下にも、上の見出し(figcaption)と同じ高さの余白を入れ、絵が枠の下端に付かないようにする */
+.gallery figure{padding-bottom:calc(.9rem * 1.7 + 2px)}
+.notes details summary{cursor:pointer;color:var(--muted);font-size:.85rem;margin-top:4px}
+.notes .extra.rows{display:grid;gap:10px}.notes .extra.rows figure{margin:0;padding:6px 0 0}.notes .extra.rows figcaption{color:#e6e8ee;font-size:.85rem;padding:0 8px}.notes .extra.rows img{max-width:100%;width:100%}
+.notes .extra{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.notes .extra img{max-width:min(100%,380px);height:auto;image-rendering:pixelated;background:var(--panel);border-radius:4px}
+.notes{list-style:none;padding:0;margin:0;display:grid;gap:14px;font-size:.92rem}
+.notes>li{max-width:none;padding-left:12px;border-left:3px solid color-mix(in srgb,var(--muted) 40%,transparent)}
+.notes .nh{font-weight:700;margin-bottom:2px}.notes .no{display:inline-block;min-width:3.6em;font-family:var(--display);font-weight:400;color:var(--blue)}
+.notes ul{list-style:none;padding:0;margin:0}.notes ul li{max-width:none;display:flex;gap:8px;align-items:baseline}
+.notes .tag{flex:none;font-size:.75rem;padding:0 6px;border-radius:4px;border:1px solid currentColor;line-height:1.5}
+.notes .tag.muted{color:var(--muted)}
+/* 透過した絵は、透過が分かるようにチェック(Aseprite と同じ灰色2色、1マスは絵の幅の 1/8 でドットの格子にそろう)に載せ、
+   絵の範囲が分かるように、絵の上の文字(番号・見出し)と同じ白の枠で囲む */
+img.clear{outline:1px solid #e6e8ee;outline-offset:0;background-color:#bfbfbf;
+  background-image:conic-gradient(#7f7f7f 90deg,#bfbfbf 90deg 180deg,#7f7f7f 180deg 270deg,#bfbfbf 270deg);background-size:var(--check,25% 25%)}
+/* 正方形でない絵は、マスが正方形になるように --check(2マス分の大きさ)を style で渡す */
+/* 文章・コード:変更前後を横に並べる、表、行の差分 */
+.cols{display:grid;grid-template-columns:repeat(var(--n,2),minmax(0,1fr));gap:8px}
+@media (max-width:640px){.cols{grid-template-columns:1fr}}
+.cols>div{display:grid;gap:4px;align-content:start;min-width:0}.cols .cap{font-family:var(--display);font-size:.9rem}
+pre{margin:0;padding:10px 12px;background:color-mix(in srgb,var(--panel) 10%,var(--bg));border:1px solid color-mix(in srgb,var(--muted) 30%,transparent);border-radius:6px;overflow-x:auto;font-size:.85rem;line-height:1.6;white-space:pre-wrap;word-break:break-word}
+table{border-collapse:collapse;font-size:.92rem;width:100%}th,td{border:1px solid color-mix(in srgb,var(--muted) 35%,transparent);padding:4px 8px;text-align:left;vertical-align:top}
+th{background:color-mix(in srgb,var(--panel) 12%,var(--bg))}.tablewrap{overflow-x:auto}
+pre.diff .add{background:color-mix(in srgb,#2f9e44 22%,transparent);display:block}pre.diff .del{background:color-mix(in srgb,#e03131 20%,transparent);display:block;text-decoration:line-through}
+pre.diff .hunk{color:var(--muted);display:block}
+</style></head>
+<body><main>
+<header><h1>テーマ未定の記事の制作過程</h1><p class="muted">新しい下書きの準備（2026-10-12）</p></header>
+<section data-group="記事ページ"><h2>1. 下書きを作成</h2><p>content/posts/new_article.md を統一済みのTOML書式で作成。仮タイトルは「新しい記事」。テーマは後で決めるため、本文・カテゴリ・タグは未設定。draft = true で公開を保留する。</p><pre>+++
+title = &quot;新しい記事&quot;
+date = &quot;2026-10-12T01:08:17+09:00&quot;
+draft = true
+categories = []
+tags = []
++++
+
+&lt;!-- ここから本文を書いてください． --&gt;
+</pre></section>
+<section data-group="記事の添削"><h2>2. 原稿の添削（第2版 → 第3版）</h2><p>欅坂46と櫻坂46についての原稿を添削。感謝と批判、挑戦する義務についての主張や断定の強さは保持した。曲名を引用符で区切り、「長い時間活動を見る」などの言い回しを整えた。句読点を「，」「．」に統一し、段落の区切りと順序を保って1文ごとに改行した。タイトル・カテゴリ・タグ・公開設定はそのまま。</p><pre class="diff"><span class="hunk">…</span>
++++
+
+<span class="del">私は今でも欅坂46が好きだ。</span>
+<span class="add">私は今でも欅坂46が好きだ．</span>
+
+<span class="del">サイレントマジョリティーは、自分の中では少し特別な位置にある。欅坂の曲であることは間違いないのだが、同時に欅坂というグループの枠を越えて、一つの独立した作品になっているようにも感じる。だから、自分の好きな欅坂の曲を10曲選ぶときには、あえて殿堂入りとして外している。</span>
+<span class="add">「サイレントマジョリティー」は，自分の中では少し特別な位置にある．</span>
+<span class="add">欅坂の曲であることは間違いないのだが，同時に欅坂というグループの枠を越えて，一つの独立した作品になっているようにも感じる．</span>
+<span class="add">だから，自分の好きな欅坂の曲を10曲選ぶときには，あえて殿堂入りとして外している．</span>
+
+<span class="del">そのうえで選ぶなら、不協和音、ガラスを割れ！、アンビバレント、危なっかしい計画、制服と太陽、風に吹かれても、微笑みが悲しい、語るなら未来を…、ボブディランは返さない、世界には愛しかない、という並びになる。こうして並べてみると、自分がどのような欅坂を好んでいたのかが少し見えてくる。</span>
+<span class="add">そのうえで選ぶなら，「不協和音」，「ガラスを割れ！」，「アンビバレント」，「危なっかしい計画」，「制服と太陽」，「風に吹かれても」，「微笑みが悲しい」，「語るなら未来を…」，「ボブディランは返さない」，「世界には愛しかない」，という並びになる．</span>
+<span class="add">こうして並べてみると，自分がどのような欅坂を好んでいたのかが少し見えてくる．</span>
+
+<span class="del">私は、おそらく前へ進んでいる欅坂が好きだった。楽曲の方向性は毎回異なっていたが、共通していたのは、次に何を見せるのか分からないという感覚だった。</span>
+<span class="add">私は，おそらく前へ進んでいる欅坂が好きだった．</span>
+<span class="add">楽曲の方向性は毎回異なっていたが，共通していたのは，次に何を見せるのか分からないという感覚だった．</span>
+
+<span class="del">一方で、黒い羊は今でもあまり聴くことができない。曲として嫌いなわけではない。むしろ完成度は高いと思っている。ただ、今の自分には、あの曲が欅坂の終わりを示唆していたように見えてしまう。</span>
+<span class="add">一方で，「黒い羊」は今でもあまり聴くことができない．</span>
+<span class="add">曲として嫌いなわけではない．</span>
+<span class="add">むしろ完成度は高いと思っている．</span>
+<span class="add">ただ，今の自分には，あの曲が欅坂の終わりを示唆していたように見えてしまう．</span>
+
+<span class="del">実際、その頃から私は欅坂を見ることができなくなった。平手友梨奈が脱退する可能性を感じ始めた頃、欅坂がなくなるところを見るくらいなら、最初から見ない方がいいと考えていた。今になって振り返ると、最後まで見届ければよかったとも思う。ただ、当時の自分にそれができたかと考えると、やはり難しかったようにも思う。</span>
+<span class="add">実際，その頃から私は欅坂を見ることができなくなった．</span>
+<span class="add">平手友梨奈が脱退する可能性を感じ始めた頃，欅坂がなくなるところを見るくらいなら，最初から見ない方がいいと考えていた．</span>
+<span class="add">今になって振り返ると，最後まで見届ければよかったとも思う．</span>
+<span class="add">ただ，当時の自分にそれができたかと考えると，やはり難しかったようにも思う．</span>
+
+<span class="del">私はもともと、アイドルの裏側を積極的に知りたいとは思わない。メンバー同士の関係や、運営内部の事情、制作過程で何が起きていたのか。そうしたものは、必ずしもファンが知る必要のあるものではないと考えている。私は、アイドルが外に見せると決めたものだけを受け取りたい。曲、ライブ、MV、衣装、パフォーマンス、発言。そこに出力されたものを見て考えたい。</span>
+<span class="add">私はもともと，アイドルの裏側を積極的に知りたいとは思わない．</span>
+<span class="add">メンバー同士の関係や，運営内部の事情，制作過程で何が起きていたのか．</span>
+<span class="add">そうしたものは，必ずしもファンが知る必要のあるものではないと考えている．</span>
+<span class="add">私は，アイドルが外に見せると決めたものだけを受け取りたい．</span>
+<span class="add">曲，ライブ，MV，衣装，パフォーマンス，発言．</span>
+<span class="add">そうして表に出されたものを見て考えたい．</span>
+
+<span class="del">だから、欅坂がなぜ終わったのかについても、内部事情を推測して納得したいとは思わない。私が確認できるのは、欅坂46が終わり、櫻坂46になったという結果だけである。そして、その結果について、私は今でも完全には納得していない。</span>
+<span class="add">だから，欅坂がなぜ終わったのかについても，内部事情を推測して納得したいとは思わない．</span>
+<span class="add">私が確認できるのは，欅坂46が終わり，櫻坂46になったという結果だけである．</span>
+<span class="add">そして，その結果について，私は今でも完全には納得していない．</span>
+
+<span class="del">自分の中で長く引っかかっているのは、欅坂には一度、欅坂のまま挑戦する義務があったのではないか、という点である。平手がいなくなった欅坂が世間からどのように評価されたとしても、私にはそれほど重要ではなかったと思う。平手がいない欅坂は欅坂ではないと言われてもよかった。新しいセンターが批判されてもよかった。売上が落ちてもよかった。それでも一度は、欅坂46として次の作品を提示してほしかった。成功するかどうかよりも、挑戦したという事実の方が重要だった。</span>
+<span class="add">自分の中で長く引っかかっているのは，欅坂には一度，欅坂のまま挑戦する義務があったのではないか，という点である．</span>
+<span class="add">平手がいなくなった欅坂が世間からどのように評価されたとしても，私にはそれほど重要ではなかったと思う．</span>
+<span class="add">平手がいない欅坂は欅坂ではないと言われてもよかった．</span>
+<span class="add">新しいセンターが批判されてもよかった．</span>
+<span class="add">売上が落ちてもよかった．</span>
+<span class="add">それでも一度は，欅坂46として次の作品を提示してほしかった．</span>
+<span class="add">成功するかどうかよりも，挑戦したという事実の方が重要だった．</span>
+
+<span class="del">もし挑戦して失敗していたら、自分はどうしていただろうか。おそらく、それだけを理由に離れることはなかったと思う。だからこそ、失敗する前に欅坂そのものが終わったことに、今でも引っかかりが残っている。なぜ一度戦ってみるという選択をしなかったのか。なぜ失敗する可能性まで含めて、欅坂を続けようとしなかったのか。そう考えると、ときどき、自分たちファンはそれほど信用されていなかったのだろうか、と感じることもある。</span>
+<span class="add">もし挑戦して失敗していたら，自分はどうしていただろうか．</span>
+<span class="add">おそらく，その失敗だけを理由に離れることはなかったと思う．</span>
+<span class="add">だからこそ，失敗する前に欅坂そのものが終わったことに，今でも引っかかりが残っている．</span>
+<span class="add">なぜ一度戦ってみるという選択をしなかったのか．</span>
+<span class="add">なぜ失敗する可能性まで含めて，欅坂を続けようとしなかったのか．</span>
+<span class="add">そう考えると，ときどき，自分たちファンはそれほど信用されていなかったのだろうか，と感じることもある．</span>
+
+<span class="del">もちろん、実際に何を考えていたのかは分からない。そして、私はそれを知る必要もないと思っている。ただ、結果として、欅坂を続けることよりも、欅坂を終わらせて別の名前になることが選ばれた。その事実だけが残っている。</span>
+<span class="add">もちろん，実際に何を考えていたのかは分からない．</span>
+<span class="add">そして，私はそれを知る必要もないと思っている．</span>
+<span class="add">ただ，結果として，欅坂を続けることよりも，欅坂を終わらせて別の名前になることが選ばれた．</span>
+<span class="add">その事実だけが残っている．</span>
+
+<span class="del">ここで、自分にとってアイドルとは何なのかを考える必要がある。歌唱力だけで比較するなら、歌手という職業がある。ダンスだけで比較するなら、ダンサーという職業がある。もちろんアイドルにも高い歌唱力やダンス技術を持つ人はいるが、それだけがアイドルという存在を特別にしているわけではないように思う。</span>
+<span class="add">ここで，自分にとってアイドルとは何なのかを考える必要がある．</span>
+<span class="add">歌唱力だけで比較するなら，歌手という職業がある．</span>
+<span class="add">ダンスだけで比較するなら，ダンサーという職業がある．</span>
+<span class="add">もちろんアイドルにも高い歌唱力やダンス技術を持つ人はいるが，それだけがアイドルという存在を特別にしているわけではないように思う．</span>
+
+<span class="del">では、何によって差が生まれるのか。私は、ファンとの相互作用にあるのではないかと考えている。長い時間活動を見る。曲を聴く。ライブへ行く。成功も失敗も共有する。その積み重ねによって、単に歌って踊る人ではなく、自分にとって特別な存在になっていく。</span>
+<span class="add">では，何によってその違いが生まれるのか．</span>
+<span class="add">私は，ファンとの相互作用にあるのではないかと考えている．</span>
+<span class="add">長い時間にわたって活動を見る．</span>
+<span class="add">曲を聴く．</span>
+<span class="add">ライブへ行く．</span>
+<span class="add">成功も失敗も共有する．</span>
+<span class="add">その積み重ねによって，単に歌って踊る人ではなく，自分にとって特別な存在になっていく．</span>
+
+<span class="del">だとすれば、ファンとの関係には何らかの継続性が必要なのではないか。グループが大きく方向転換するとき、そこまで一緒に歩いてきたファンに対して、何を引き継ぐべきなのか。どこまで過去を背負う義務があるのか。この問いを考えると、自分が欅坂の改名に引っかかっている理由も少し分かってくる。</span>
+<span class="add">だとすれば，ファンとの関係には何らかの継続性が必要なのではないか．</span>
+<span class="add">グループが大きく方向転換するとき，そこまで一緒に歩いてきたファンに対して，何を引き継ぐべきなのだろうか．</span>
+<span class="add">どこまで過去を背負う義務があるのか．</span>
+<span class="add">この問いを考えると，自分が欅坂の改名に引っかかっている理由も少し分かってくる．</span>
+
+<span class="del">私は、櫻坂を最初から拒絶していたわけではない。ほんの一年前までは、櫻坂の曲をかなり聴いていたし、ライブにも行っていた。それなりに楽しんでいた。それでも最近になって、ポジティブな感情よりもネガティブな感情の方が強くなり、自然に離れていった。</span>
+<span class="add">私は，櫻坂を最初から拒絶していたわけではない．</span>
+<span class="add">ほんの一年前までは，櫻坂の曲をかなり聴いていたし，ライブにも行っていた．</span>
+<span class="add">それなりに楽しんでいた．</span>
+<span class="add">それでも最近になって，ポジティブな感情よりもネガティブな感情の方が強くなり，自然に離れていった．</span>
+
+<span class="del">なぜなのか。しばらく考えて、ようやく自分の中で一つの仮説ができた。私は、櫻坂がいつか欅坂を越えてくれることを期待していたのだと思う。欅坂を知っているメンバーたちが、櫻坂という新しい名前で活動しながら、いつか欅坂以上の何かを提示してくれる。もしそうなれば、私は改名という選択にも一定の意味を見いだせたのかもしれない。欅坂を捨てたのではなく、欅坂を越えるために別の形になったのだと考えることができたかもしれない。</span>
+<span class="add">なぜなのか．</span>
+<span class="add">しばらく考えて，ようやく自分の中で一つの仮説ができた．</span>
+<span class="add">私は，櫻坂がいつか欅坂を越えてくれることを期待していたのだと思う．</span>
+<span class="add">欅坂を知っているメンバーたちが，櫻坂という新しい名前で活動しながら，いつか欅坂以上の何かを提示してくれる．</span>
+<span class="add">もしそうなれば，私は改名という選択にも一定の意味を見いだせたのかもしれない．</span>
+<span class="add">欅坂を捨てたのではなく，欅坂を越えるために別の形になったのだと考えることができたかもしれない．</span>
+
+<span class="del">しかし、時間が経った。欅坂を知っているメンバーは少しずついなくなった。現在のメンバーに対して、欅坂を越えてほしいと求めることには違和感がある。彼女たちは欅坂を実際に経験していない。欅坂の延長として活動しているわけでもない。その人たちに、こちら側の未解決の感情を背負わせることは違うと思う。</span>
+<span class="add">しかし，時間が経った．</span>
+<span class="add">欅坂を知っているメンバーは少しずついなくなった．</span>
+<span class="add">現在のメンバーに対して，欅坂を越えてほしいと求めることには違和感がある．</span>
+<span class="add">彼女たちは欅坂を実際に経験していない．</span>
+<span class="add">欅坂の延長として活動しているわけでもない．</span>
+<span class="add">その人たちに，こちら側の未解決の感情を背負わせるのは違うと思う．</span>
+
+<span class="del">では、欅坂を越えるという義務は誰が担っていたのか。自分は、欅坂から櫻坂へ移った人たちに、その役割を無意識に期待していたのではないか。そして、その人たちがいなくなったことで、初めてその可能性が完全に消えたと感じたのではないか。</span>
+<span class="add">では，欅坂を越えるという義務は誰が担っていたのか．</span>
+<span class="add">自分は，欅坂から櫻坂へ移った人たちに，その役割を無意識に期待していたのではないか．</span>
+<span class="add">そして，その人たちがいなくなったことで，初めてその可能性が完全に消えたと感じたのではないか．</span>
+
+<span class="del">そう考えると、最近になって櫻坂から離れた理由も理解しやすい。自分が見ていたのは、単純に櫻坂という新しいグループではなかった。欅坂の続きを、櫻坂の中に見ようとしていた。だから、欅坂を知る人がいなくなるにつれて、櫻坂と欅坂を結んでいたものも自分の中では消えていった。</span>
+<span class="add">そう考えると，最近になって櫻坂から離れた理由も理解しやすい．</span>
+<span class="add">自分が見ていたのは，単純に櫻坂という新しいグループではなかった．</span>
+<span class="add">欅坂の続きを，櫻坂の中に見ようとしていた．</span>
+<span class="add">だから，欅坂を知る人がいなくなるにつれて，櫻坂と欅坂を結んでいたものも自分の中では消えていった．</span>
+
+<span class="del">現在の櫻坂が成功しているかどうかは、本質ではない。どれだけライブに人が集まっても、どれだけ大きな会場で公演をしても、それによって欅坂を越えたことにはならない。なぜなら、自分が見たかったのは記録の更新ではなく、欅坂を知っている人たちによる欅坂の自己超越だったからだ。</span>
+<span class="add">現在の櫻坂が成功しているかどうかは，本質ではない．</span>
+<span class="add">どれだけライブに人が集まっても，どれだけ大きな会場で公演をしても，それによって欅坂を越えたことにはならない．</span>
+<span class="add">なぜなら，自分が見たかったのは記録の更新ではなく，欅坂を知っている人たちによる欅坂の自己超越だったからだ．</span>
+
+<span class="del">ここまで考えると、自分の中にある違和感は、櫻坂そのものへの不満だけではないことが分かる。自分は、欅坂が終わったことに対して、まだ決着をつけられていない。そして、決着をつけるために無意識のうちに櫻坂を見続けていたのだと思う。</span>
+<span class="add">ここまで考えると，自分の中にある違和感が，櫻坂そのものへの不満だけではないことが分かる．</span>
+<span class="add">自分は，欅坂が終わったことに対して，まだ決着をつけられていない．</span>
+<span class="add">そして，決着をつけるために無意識のうちに櫻坂を見続けていたのだと思う．</span>
+
+<span class="del">しかし、その役割を担う人たちはもういない。そうなると、自分の中に残るのは、欅坂には一度挑戦してほしかった、という考えだけである。なぜあのとき逃げたのか。なぜ挑戦して、失敗してくれなかったのか。失敗したとしても、自分はどこにも行かなかったと思う。この問いを誰かにぶつけたいという感覚がある。それができないから、今でもどこかに無力感が残っているのだと思う。</span>
+<span class="add">しかし，その役割を担う人たちはもういない．</span>
+<span class="add">そうなると，自分の中に残るのは，欅坂には一度挑戦してほしかった，という考えだけである．</span>
+<span class="add">なぜあのとき逃げたのか．</span>
+<span class="add">なぜ挑戦して，失敗してくれなかったのか．</span>
+<span class="add">失敗したとしても，自分はどこにも行かなかったと思う．</span>
+<span class="add">この問いを誰かにぶつけたいという感覚がある．</span>
+<span class="add">それができないから，今でもどこかに無力感が残っているのだと思う．</span>
+
+<span class="del">ただし、同時に欅坂を恨むこともできない。欅坂は、自分の人生に大きな影響を与えた存在だからである。人生を救ってくれたと言ってもいい。だから、自分の中には感謝と批判が同時に存在している。</span>
+<span class="add">ただし，同時に欅坂を恨むこともできない．</span>
+<span class="add">欅坂は，自分の人生に大きな影響を与えた存在だからである．</span>
+<span class="add">人生を救ってくれたと言ってもいい．</span>
+<span class="add">だから，自分の中には感謝と批判が同時に存在している．</span>
+
+<span class="del">欅坂があったことには感謝している。欅坂を好きになったことにも後悔はない。しかし、終わる前に一度挑戦してほしかったという考えも変わらない。この二つは矛盾しているようにも見える。しかし、本当に矛盾しているのだろうか。</span>
+<span class="add">欅坂があったことには感謝している．</span>
+<span class="add">欅坂を好きになったことにも後悔はない．</span>
+<span class="add">しかし，終わる前に一度挑戦してほしかったという考えも変わらない．</span>
+<span class="add">この二つは矛盾しているようにも見える．</span>
+<span class="add">しかし，本当に矛盾しているのだろうか．</span>
+
+<span class="del">ある存在に救われたからといって、その存在が行ったすべての選択を肯定しなければならないわけではない。感謝していることと、ある判断に納得していないことは両立する。そう考えると、自分は欅坂を恨みたいのではなく、欅坂のある選択を今でも批判しているだけなのかもしれない。</span>
+<span class="add">ある存在に救われたからといって，その存在が行ったすべての選択を肯定しなければならないわけではない．</span>
+<span class="add">感謝していることと，ある判断に納得していないことは両立する．</span>
+<span class="add">そう考えると，自分は欅坂を恨みたいのではなく，欅坂のある選択を今でも批判しているだけなのかもしれない．</span>
+
+<span class="del">そしてもう一つ、改名によって良かったと思えることもある。欅坂46が不変の存在になったことである。もし欅坂という名前のまま現在まで続いていたら、欅坂とは何かという意味も、新しい曲や新しいメンバーによって少しずつ更新されていただろう。しかし、欅坂は終わった。だから、自分の知っている欅坂はもう変わらない。</span>
+<span class="add">そしてもう一つ，改名によって良かったと思えることもある．</span>
+<span class="add">欅坂46が不変の存在になったことである．</span>
+<span class="add">もし欅坂という名前のまま現在まで続いていたら，「欅坂とは何か」という意味も，新しい曲や新しいメンバーによって少しずつ更新されていただろう．</span>
+<span class="add">しかし，欅坂は終わった．</span>
+<span class="add">だから，自分の知っている欅坂はもう変わらない．</span>
+
+<span class="del">不協和音も、ガラスを割れ！も、アンビバレントも、制服と太陽も、世界には愛しかないも、その時代の作品としてそのまま残っている。欅坂が続いている未来を見たかったという気持ちと、欅坂が欅坂のまま保存されたことをありがたいと思う気持ちは、今でも同時に存在している。おそらく、この二つも簡単には統合できない。</span>
+<span class="add">「不協和音」も，「ガラスを割れ！」も，「アンビバレント」も，「制服と太陽」も，「世界には愛しかない」も，その時代の作品としてそのまま残っている．</span>
+<span class="add">欅坂が続いている未来を見たかったという気持ちと，欅坂が欅坂のまま保存されたことをありがたいと思う気持ちは，今でも同時に存在している．</span>
+<span class="add">おそらく，この二つも簡単には統合できない．</span>
+
+<span class="del">最近、ときどき考えることがある。元メンバーの人生は進んでいる。現メンバーの人生も進んでいる。当時のファンも、それぞれ別の場所へ進んでいる。それなのに、自分だけが欅坂の終わった場所に残っているのではないか。自分の時間だけが止まっているのではないか。</span>
+<span class="add">最近，ときどき考えることがある．</span>
+<span class="add">元メンバーの人生は進んでいる．</span>
+<span class="add">現メンバーの人生も進んでいる．</span>
+<span class="add">当時のファンも，それぞれ別の場所へ進んでいる．</span>
+<span class="add">それなのに，自分だけが欅坂が終わった場所に残っているのではないか．</span>
+<span class="add">自分の時間だけが止まっているのではないか．</span>
+
+<span class="del">ただ、もう少し正確に考えるなら、自分の人生全体が止まっているわけではない。欅坂に関する時間だけが、まだ終わった場所に残っているのだと思う。そして、その理由も少しずつ分かってきた。</span>
+<span class="add">ただ，もう少し正確に考えるなら，自分の人生全体が止まっているわけではない．</span>
+<span class="add">欅坂に関する時間だけが，まだ終わった場所に残っているのだと思う．</span>
+<span class="add">そして，その理由も少しずつ分かってきた．</span>
+
+<span class="del">自分は欅坂が終わったことそのものだけを惜しんでいるのではない。実現しなかった未来を惜しんでいる。平手がいなくなった欅坂が、それでも欅坂として挑戦する未来。失敗するかもしれない。批判されるかもしれない。それでもファンと一緒に進み、過去の欅坂を越えようとする未来。その可能性が試されないまま消えたことに、今でも納得できていない。</span>
+<span class="add">自分は欅坂が終わったことそのものだけを惜しんでいるのではない．</span>
+<span class="add">実現しなかった未来を惜しんでいる．</span>
+<span class="add">平手がいなくなった欅坂が，それでも欅坂として挑戦する未来．</span>
+<span class="add">失敗するかもしれない．</span>
+<span class="add">批判されるかもしれない．</span>
+<span class="add">それでもファンと一緒に進み，過去の欅坂を越えようとする未来．</span>
+<span class="add">その可能性が試されないまま消えたことに，今でも納得できていない．</span>
+
+<span class="del">この感覚は、時間が経てば消えるのだろうか。正直、分からない。無理に消す必要もないのかもしれない。欅坂を忘れる必要もない。櫻坂を再び好きになる必要もない。終わり方に納得する必要もない。</span>
+<span class="add">この感覚は，時間が経てば消えるのだろうか．</span>
+<span class="add">正直，分からない．</span>
+<span class="add">無理に消す必要もないのかもしれない．</span>
+<span class="add">欅坂を忘れる必要もない．</span>
+<span class="add">櫻坂を再び好きになる必要もない．</span>
+<span class="add">終わり方に納得する必要もない．</span>
+
+<span class="del">今の自分にできるのは、欅坂に救われたことへの感謝と、挑戦してほしかったという批判を、どちらもそのまま持っておくことなのだと思う。いつか、この二つをもっと自然に同時に扱えるようになるかもしれない。ならないかもしれない。少なくとも今は、無理に結論を出そうとは思わない。</span>
+<span class="add">今の自分にできるのは，欅坂に救われたことへの感謝と，挑戦してほしかったという批判を，どちらもそのまま持っておくことなのだと思う．</span>
+<span class="add">いつか，この二つを同時に，もっと自然に扱えるようになるかもしれない．</span>
+<span class="add">ならないかもしれない．</span>
+<span class="add">少なくとも今は，無理に結論を出そうとは思わない．</span>
+
+<span class="del">欅坂を好きだったこと。欅坂が続いてほしかったこと。欅坂には挑戦する義務があったと今でも考えていること。そして、その義務を果たす未来がもう存在しないこと。それらを一度、自分の中にあるものとして認めたうえで、このまま生きていこうと思う。</span>
+<span class="add">欅坂を好きだったこと．</span>
+<span class="add">欅坂が続いてほしかったこと．</span>
+<span class="add">欅坂には挑戦する義務があったと今でも考えていること．</span>
+<span class="add">そして，その義務を果たす未来がもう存在しないこと．</span>
+<span class="add">それらを一度，自分の中にあるものとして認めたうえで，このまま生きていこうと思う．</span></pre></section>
+<section data-group="記事の添削"><h2>3. 語順の調整（第3版 → 第4版）</h2><p>「自分だけが欅坂が終わった場所に」という助詞の重なりを避け、「欅坂が終わった場所に，自分だけが」という語順に整えた。</p><pre class="diff"><span class="hunk">…</span>
+現メンバーの人生も進んでいる．
+当時のファンも，それぞれ別の場所へ進んでいる．
+<span class="del">それなのに，自分だけが欅坂が終わった場所に残っているのではないか．</span>
+<span class="add">それなのに，欅坂が終わった場所に，自分だけが残っているのではないか．</span>
+自分の時間だけが止まっているのではないか．
+</pre></section>
+<section data-group="記事の公開"><h2>4. 下書き設定を削除して公開対象にする</h2><p>ユーザーの指示で draft = true の行を削除した。本文とタイトル、カテゴリ、タグはそのまま保持し、通常のビルドで出力されることを確認する。</p><pre class="diff"><span class="hunk">…</span>
+title = &quot;新しい記事&quot;
+date = &quot;2026-10-12T01:08:17+09:00&quot;
+<span class="del">draft = true</span>
+categories = []
+tags = []</pre></section>
+</main>
+<script>
+// 並べたGIFを同時に始める(長さは最後のコマを延ばしてそろえておく)。見えたときにも始め直す
+(()=>{const restart=g=>{const imgs=[...g.querySelectorAll('img[src^="data:image/gif"]')];const srcs=imgs.map(i=>i.src);imgs.forEach(i=>i.src='');requestAnimationFrame(()=>imgs.forEach((i,k)=>i.src=srcs[k]))};
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)restart(e.target)}),{threshold:0.3});
+document.querySelectorAll('.gallery').forEach(g=>io.observe(g));})();
+</script>
+<!--pp-toc--><script>
+// 左に目次を出す。広い画面では左に固定し、狭い画面では右下の「目次」ボタンで開く。今見ている項目に色を付ける。
+// <section data-group="まとまりの名前"> の項目は、目次ではまとまりごとに1行にまとめ(離れていても同じ名前なら1つに集める)、
+// 細かい項目(h2)を開ける。開くのはいつも1つだけ:ふだんは今見ているまとまりが開き、別のまとまりへ移ると入れ替わる。
+// まとまりの名前を押すとそこへ飛んで開く。右の三角は、飛ばずに別のまとまりの中身をのぞく(スクロールで別のまとまりに入ると、今の所に戻る)。
+// data-group のないページは h2 を並べるだけ。
+// 見た目もここに入れてある(このスクリプトだけで動く)。server.py も、これを含まないページに差し込む。
+(()=>{if(document.querySelector('nav.pp-toc'))return;
+const hs=[...document.querySelectorAll('main h2')];if(hs.length<2)return;
+const st=document.createElement('style');st.textContent=`
+.pp-toc{position:fixed;top:0;left:0;bottom:0;width:250px;overflow-y:auto;padding:24px 8px 24px 12px;box-sizing:border-box;z-index:10;
+ font-size:.84rem;line-height:1.45;background:var(--bg,#fff);border-right:1px solid color-mix(in srgb,var(--muted,#888) 30%,transparent)}
+.pp-toc-title{font-family:var(--display,monospace);font-size:1rem;margin:0 0 8px 6px}
+.pp-toc ol,.pp-toc ul{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+.pp-toc li{max-width:none}
+.pp-toc .pp-row{display:grid;grid-template-columns:1.8em 1fr 1.6em;align-items:start;border-radius:4px}
+.pp-toc .pp-row:hover{background:color-mix(in srgb,var(--muted,#888) 15%,transparent)}
+.pp-toc .pp-no{font-family:var(--display,monospace);opacity:.7;padding:3px 0 3px 6px}
+.pp-toc a{color:var(--muted,#555);text-decoration:none;padding:3px 0;display:block}
+.pp-toc .pp-row:hover a{color:var(--fg,#000)}
+.pp-toc .pp-tw{background:none;border:0;padding:3px 0;margin:0;color:var(--muted,#555);cursor:pointer;font:inherit;line-height:1.45;transition:transform .15s}
+.pp-toc li.open>.pp-row .pp-tw{transform:rotate(90deg)}
+.pp-toc .pp-wrap{display:grid;grid-template-rows:0fr;opacity:0;transition:grid-template-rows .28s ease,opacity .28s ease}
+.pp-toc li.open>.pp-wrap{grid-template-rows:1fr;opacity:1}
+.pp-toc .pp-sub{min-height:0;overflow:hidden;margin:0 0 0 1.8em;padding:0 0 4px 8px;border-left:1px solid color-mix(in srgb,var(--muted,#888) 35%,transparent);font-size:.8rem}
+@media (prefers-reduced-motion:reduce){.pp-toc .pp-wrap,.pp-toc .pp-tw{transition:none}}
+.pp-toc .pp-sub a{padding:2px 6px;border-radius:4px}
+.pp-toc .pp-sub a:hover{color:var(--fg,#000);background:color-mix(in srgb,var(--muted,#888) 15%,transparent)}
+.pp-toc .pp-row.on{background:color-mix(in srgb,var(--blue,#2b5fb8) 14%,transparent)}.pp-toc .pp-row.on a,.pp-toc .pp-row.on .pp-no{color:var(--blue,#2b5fb8)}
+.pp-toc .pp-sub a.on{color:var(--blue,#2b5fb8);background:color-mix(in srgb,var(--blue,#2b5fb8) 10%,transparent)}
+main h2{scroll-margin-top:16px}
+.pp-toc-btn{display:none}
+@media (min-width:1100px){body.pp-has-toc main{margin-left:max(266px,calc((100% - 860px)/2))}}
+@media (max-width:1099px){.pp-toc{width:min(310px,85vw);transform:translateX(-100%);transition:transform .2s}
+ body.pp-toc-open .pp-toc{transform:none;box-shadow:0 0 24px rgba(0,0,0,.35)}
+ .pp-toc-btn{display:block;position:fixed;right:16px;bottom:16px;z-index:11;font:inherit;font-family:var(--display,monospace);padding:8px 14px;cursor:pointer;
+  border-radius:999px;border:1px solid color-mix(in srgb,var(--muted,#888) 40%,transparent);background:var(--bg,#fff);color:var(--fg,#000);box-shadow:0 2px 8px rgba(0,0,0,.25)}}`;
+document.head.appendChild(st);
+const el=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e};
+const link=h=>{const a=el('a',null,h.textContent);a.href='#'+h.id;return a};
+// まとまりを作る(同じ名前は最初に出た所に集める)
+const items=[],byName={};
+hs.forEach((h,i)=>{if(!h.id)h.id='s'+(i+1);const g=h.closest('[data-group]');const name=g?g.dataset.group:null;
+  if(name){if(!byName[name]){byName[name]={name,hs:[]};items.push(byName[name])}byName[name].hs.push(h)}else items.push({name:null,hs:[h]})});
+const nav=el('nav','pp-toc'),ol=el('ol');nav.setAttribute('aria-label','目次');
+const rowOf=new Map(),subOf=new Map(),groupOf=new Map(),groups=[];
+let cur=null,peek=null,hideCur=false;  // cur:今見ているまとまり。peek:三角でのぞいているまとまり。hideCur:今のまとまりを三角で閉じた
+const shown=()=>peek||(hideCur?null:cur);
+const apply=()=>groups.forEach(g=>{const o=g.name===shown();g.li.classList.toggle('open',o);g.tw.setAttribute('aria-expanded',String(o))});
+items.forEach((it,n)=>{const li=el('li'),row=el('div','pp-row');row.append(el('span','pp-no',String(n+1)));
+  const top=link(it.hs[0]);if(it.name)top.textContent=it.name;row.append(top);li.append(row);
+  if(it.name&&it.hs.length>1){const tw=el('button','pp-tw','▸');tw.type='button';tw.title='細かい目次';row.append(tw);
+    const wrap=el('div','pp-wrap'),ul=el('ul','pp-sub');it.hs.forEach(h=>{const sl=el('li'),a=link(h);sl.append(a);ul.append(sl);subOf.set(h,a)});
+    wrap.append(ul);li.append(wrap);wrap.addEventListener('transitionend',e=>{if(e.propertyName==='grid-template-rows')keep()});
+    const g={name:it.name,li,tw};groups.push(g);
+    tw.addEventListener('click',()=>{if(shown()===it.name){if(peek===it.name)peek=null;else hideCur=true}
+      else{peek=it.name===cur?null:it.name;hideCur=false}apply()});
+    top.addEventListener('click',()=>{cur=it.name;peek=null;hideCur=false;apply()})}
+  else if(it.name)top.title=it.hs[0].textContent;
+  it.hs.forEach(h=>{rowOf.set(h,row);groupOf.set(h,it.name)});ol.append(li)});
+nav.append(el('div','pp-toc-title','目次'),ol);
+const btn=el('button','pp-toc-btn','目次');btn.type='button';btn.setAttribute('aria-expanded','false');
+const show=o=>{document.body.classList.toggle('pp-toc-open',o);btn.setAttribute('aria-expanded',String(o))};
+btn.addEventListener('click',()=>show(!document.body.classList.contains('pp-toc-open')));
+nav.addEventListener('click',e=>{if(e.target.closest('a'))show(false)});
+document.body.append(nav,btn);document.body.classList.add('pp-has-toc');
+// 今見ている項目:画面の上から1/3の線より上にある最後の見出し。そのまとまりを開き、目次の中で見えなくなったら目次だけをスクロールする
+// 細かい目次はグイっと開く(高さを 0 から伸ばす)ので、開き終わったときにも見える位置か確かめ直す
+let curH=hs[0];
+const keep=()=>{const row=rowOf.get(curH),sub=subOf.get(curH),vis=sub&&sub.closest('li.open')?sub:row,r=vis.getBoundingClientRect(),n=nav.getBoundingClientRect();
+  if(r.top<n.top)nav.scrollTop+=r.top-n.top-8;else if(r.bottom>n.bottom)nav.scrollTop+=r.bottom-n.bottom+8};
+const mark=()=>{const y=innerHeight/3;let h=hs[0];hs.forEach(x=>{if(x.getBoundingClientRect().top<y)h=x});curH=h;
+  const g=groupOf.get(h);if(g!==cur){cur=g;peek=null;hideCur=false}apply();
+  nav.querySelectorAll('.on').forEach(e=>e.classList.remove('on'));
+  const row=rowOf.get(h),sub=subOf.get(h);row.classList.add('on');if(sub)sub.classList.add('on');keep()};
+addEventListener('scroll',mark,{passive:true});addEventListener('resize',mark);mark();})();
+</script>
+</body></html>
