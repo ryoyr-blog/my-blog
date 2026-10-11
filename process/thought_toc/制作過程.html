@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>思考カテゴリの目次の制作過程</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Noto+Sans+JP:wght@400;700&display=swap">
+<style>
+/* 一列の作業メモ。絵は整数倍で、ぼかさず表示(~/game/art/雷の使い手/制作過程.html と同じ見た目) */
+:root{--bg:#eef0f4;--fg:#1d2230;--muted:#5a6275;--panel:#3c404e;--gold:#a8820f;--blue:#2b5fb8;
+--display:"DotGothic16",monospace;--body:"Noto Sans JP",system-ui,sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15171e;--fg:#e6e8ee;--muted:#9aa2b4;--panel:#3c404e;--gold:#e0b93a;--blue:#7aa6f0;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15171e;--fg:#e6e8ee;--muted:#9aa2b4;--panel:#3c404e;--gold:#e0b93a;--blue:#7aa6f0;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);line-height:1.7;margin:0}
+main{max-width:860px;margin:0 auto;padding-inline:16px;padding-block:32px 48px;display:grid;gap:40px}
+h1,h2{font-family:var(--display);font-weight:400;text-wrap:balance;margin:0}
+h1{font-size:1.9rem}h2{font-size:1.3rem}
+section{display:grid;gap:12px}
+p{margin:0;max-width:65ch}.muted{color:var(--muted);font-size:.92rem}
+figure{margin:0;background:var(--panel);border-radius:6px;overflow-x:auto}
+figure img{display:block;image-rendering:pixelated;max-width:100%;height:auto;margin:0 auto}
+/* 絵の説明(figcaption)は、暗い枠の上でも読めるように白にする(一覧の外に置いた1枚の絵や GIF も) */
+figure figcaption{padding:2px 6px 0;font-family:var(--display);color:#e6e8ee;font-size:.9rem;line-height:1.7;text-shadow:0 0 3px #000,0 0 3px #000}
+ul{margin:0;padding-left:1.2em}li{max-width:65ch}
+.ok{color:var(--blue)}.ng{color:var(--gold)}
+.block{display:grid;gap:10px;margin-top:6px}
+.block h3{font-family:var(--display);font-weight:400;font-size:1.05rem;margin:0}
+/* 絵は1マス=横幅の1/3。1枚・2枚のときも同じ大きさのまま中央にそろえる */
+.gallery{display:flex;flex-wrap:wrap;justify-content:center;gap:0;border-radius:6px;overflow:hidden;background:var(--panel)}
+.gallery figure{flex:0 0 calc(100%/3);min-width:0;position:relative;justify-items:center;border-radius:0;overflow:visible;align-content:start;display:grid;align-items:center}
+@media (max-width:520px){.gallery figure{flex-basis:100%}}
+.gallery figcaption{position:static;justify-self:start;padding:2px 6px 0;font-family:var(--display);color:#e6e8ee;font-size:.9rem;line-height:1.7;text-shadow:0 0 3px #000,0 0 3px #000}
+/* 絵の下にも、上の見出し(figcaption)と同じ高さの余白を入れ、絵が枠の下端に付かないようにする */
+.gallery figure{padding-bottom:calc(.9rem * 1.7 + 2px)}
+.notes details summary{cursor:pointer;color:var(--muted);font-size:.85rem;margin-top:4px}
+.notes .extra.rows{display:grid;gap:10px}.notes .extra.rows figure{margin:0;padding:6px 0 0}.notes .extra.rows figcaption{color:#e6e8ee;font-size:.85rem;padding:0 8px}.notes .extra.rows img{max-width:100%;width:100%}
+.notes .extra{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.notes .extra img{max-width:min(100%,380px);height:auto;image-rendering:pixelated;background:var(--panel);border-radius:4px}
+.notes{list-style:none;padding:0;margin:0;display:grid;gap:14px;font-size:.92rem}
+.notes>li{max-width:none;padding-left:12px;border-left:3px solid color-mix(in srgb,var(--muted) 40%,transparent)}
+.notes .nh{font-weight:700;margin-bottom:2px}.notes .no{display:inline-block;min-width:3.6em;font-family:var(--display);font-weight:400;color:var(--blue)}
+.notes ul{list-style:none;padding:0;margin:0}.notes ul li{max-width:none;display:flex;gap:8px;align-items:baseline}
+.notes .tag{flex:none;font-size:.75rem;padding:0 6px;border-radius:4px;border:1px solid currentColor;line-height:1.5}
+.notes .tag.muted{color:var(--muted)}
+/* 透過した絵は、透過が分かるようにチェック(Aseprite と同じ灰色2色、1マスは絵の幅の 1/8 でドットの格子にそろう)に載せ、
+   絵の範囲が分かるように、絵の上の文字(番号・見出し)と同じ白の枠で囲む */
+img.clear{outline:1px solid #e6e8ee;outline-offset:0;background-color:#bfbfbf;
+  background-image:conic-gradient(#7f7f7f 90deg,#bfbfbf 90deg 180deg,#7f7f7f 180deg 270deg,#bfbfbf 270deg);background-size:var(--check,25% 25%)}
+/* 正方形でない絵は、マスが正方形になるように --check(2マス分の大きさ)を style で渡す */
+/* 文章・コード:変更前後を横に並べる、表、行の差分 */
+.cols{display:grid;grid-template-columns:repeat(var(--n,2),minmax(0,1fr));gap:8px}
+@media (max-width:640px){.cols{grid-template-columns:1fr}}
+.cols>div{display:grid;gap:4px;align-content:start;min-width:0}.cols .cap{font-family:var(--display);font-size:.9rem}
+pre{margin:0;padding:10px 12px;background:color-mix(in srgb,var(--panel) 10%,var(--bg));border:1px solid color-mix(in srgb,var(--muted) 30%,transparent);border-radius:6px;overflow-x:auto;font-size:.85rem;line-height:1.6;white-space:pre-wrap;word-break:break-word}
+table{border-collapse:collapse;font-size:.92rem;width:100%}th,td{border:1px solid color-mix(in srgb,var(--muted) 35%,transparent);padding:4px 8px;text-align:left;vertical-align:top}
+th{background:color-mix(in srgb,var(--panel) 12%,var(--bg))}.tablewrap{overflow-x:auto}
+pre.diff .add{background:color-mix(in srgb,#2f9e44 22%,transparent);display:block}pre.diff .del{background:color-mix(in srgb,#e03131 20%,transparent);display:block;text-decoration:line-through}
+pre.diff .hunk{color:var(--muted);display:block}
+</style></head>
+<body><main>
+<header><h1>思考カテゴリの目次の制作過程</h1><p class="muted">カテゴリに応じた目次表示（2026-10-11）</p></header>
+<section data-group="目次表示"><h2>1. 思考カテゴリでは目次を非表示</h2><p>テーマの single.html を layouts/_default/single.html に上書き用テンプレートとして配置。「思考」をカテゴリに含む記事では目次と目次用の欄を出力しない。PC・スマホ共通で、記事ごとの表示設定より優先する。他のカテゴリは従来の設定を使用する。</p><pre class="diff"><span class="hunk">…</span>
+      {{ $enableToc := site.Params.article.showTableOfContents | default false }}
+      {{ $enableToc = .Params.showTableOfContents | default $enableToc }}
+<span class="add">      {{ if in (.Params.categories | default slice) &quot;思考&quot; }}</span>
+<span class="add">        {{ $enableToc = false }}</span>
+<span class="add">      {{ end }}</span>
+      {{ $showToc := and $enableToc (in .TableOfContents &quot;&lt;ul&quot;) }}
+      {{ $topClass := cond (hasPrefix site.Params.header.layout &quot;fixed&quot;) &quot;lg:top-[140px]&quot; &quot;lg:top-10&quot; }}</pre></section>
+<section data-group="記事のカテゴリ"><h2>2. 新しい記事を思考カテゴリに設定</h2><p>「AIの普及と規制」を既存の思考記事と同じカテゴリに設定した。本文はそのまま保持する。</p><pre class="diff"><span class="hunk">…</span>
+draft = true
+title = &#x27;AIの普及と規制&#x27;
+<span class="del">categories = []</span>
+<span class="add">categories = [&quot;思考&quot;]</span>
+tags = []
++++</pre></section>
+</main>
+<script>
+// 並べたGIFを同時に始める(長さは最後のコマを延ばしてそろえておく)。見えたときにも始め直す
+(()=>{const restart=g=>{const imgs=[...g.querySelectorAll('img[src^="data:image/gif"]')];const srcs=imgs.map(i=>i.src);imgs.forEach(i=>i.src='');requestAnimationFrame(()=>imgs.forEach((i,k)=>i.src=srcs[k]))};
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)restart(e.target)}),{threshold:0.3});
+document.querySelectorAll('.gallery').forEach(g=>io.observe(g));})();
+</script>
+<!--pp-toc--><script>
+// 左に目次を出す。広い画面では左に固定し、狭い画面では右下の「目次」ボタンで開く。今見ている項目に色を付ける。
+// <section data-group="まとまりの名前"> の項目は、目次ではまとまりごとに1行にまとめ(離れていても同じ名前なら1つに集める)、
+// 細かい項目(h2)を開ける。開くのはいつも1つだけ:ふだんは今見ているまとまりが開き、別のまとまりへ移ると入れ替わる。
+// まとまりの名前を押すとそこへ飛んで開く。右の三角は、飛ばずに別のまとまりの中身をのぞく(スクロールで別のまとまりに入ると、今の所に戻る)。
+// data-group のないページは h2 を並べるだけ。
+// 見た目もここに入れてある(このスクリプトだけで動く)。server.py も、これを含まないページに差し込む。
+(()=>{if(document.querySelector('nav.pp-toc'))return;
+const hs=[...document.querySelectorAll('main h2')];if(hs.length<2)return;
+const st=document.createElement('style');st.textContent=`
+.pp-toc{position:fixed;top:0;left:0;bottom:0;width:250px;overflow-y:auto;padding:24px 8px 24px 12px;box-sizing:border-box;z-index:10;
+ font-size:.84rem;line-height:1.45;background:var(--bg,#fff);border-right:1px solid color-mix(in srgb,var(--muted,#888) 30%,transparent)}
+.pp-toc-title{font-family:var(--display,monospace);font-size:1rem;margin:0 0 8px 6px}
+.pp-toc ol,.pp-toc ul{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+.pp-toc li{max-width:none}
+.pp-toc .pp-row{display:grid;grid-template-columns:1.8em 1fr 1.6em;align-items:start;border-radius:4px}
+.pp-toc .pp-row:hover{background:color-mix(in srgb,var(--muted,#888) 15%,transparent)}
+.pp-toc .pp-no{font-family:var(--display,monospace);opacity:.7;padding:3px 0 3px 6px}
+.pp-toc a{color:var(--muted,#555);text-decoration:none;padding:3px 0;display:block}
+.pp-toc .pp-row:hover a{color:var(--fg,#000)}
+.pp-toc .pp-tw{background:none;border:0;padding:3px 0;margin:0;color:var(--muted,#555);cursor:pointer;font:inherit;line-height:1.45;transition:transform .15s}
+.pp-toc li.open>.pp-row .pp-tw{transform:rotate(90deg)}
+.pp-toc .pp-wrap{display:grid;grid-template-rows:0fr;opacity:0;transition:grid-template-rows .28s ease,opacity .28s ease}
+.pp-toc li.open>.pp-wrap{grid-template-rows:1fr;opacity:1}
+.pp-toc .pp-sub{min-height:0;overflow:hidden;margin:0 0 0 1.8em;padding:0 0 4px 8px;border-left:1px solid color-mix(in srgb,var(--muted,#888) 35%,transparent);font-size:.8rem}
+@media (prefers-reduced-motion:reduce){.pp-toc .pp-wrap,.pp-toc .pp-tw{transition:none}}
+.pp-toc .pp-sub a{padding:2px 6px;border-radius:4px}
+.pp-toc .pp-sub a:hover{color:var(--fg,#000);background:color-mix(in srgb,var(--muted,#888) 15%,transparent)}
+.pp-toc .pp-row.on{background:color-mix(in srgb,var(--blue,#2b5fb8) 14%,transparent)}.pp-toc .pp-row.on a,.pp-toc .pp-row.on .pp-no{color:var(--blue,#2b5fb8)}
+.pp-toc .pp-sub a.on{color:var(--blue,#2b5fb8);background:color-mix(in srgb,var(--blue,#2b5fb8) 10%,transparent)}
+main h2{scroll-margin-top:16px}
+.pp-toc-btn{display:none}
+@media (min-width:1100px){body.pp-has-toc main{margin-left:max(266px,calc((100% - 860px)/2))}}
+@media (max-width:1099px){.pp-toc{width:min(310px,85vw);transform:translateX(-100%);transition:transform .2s}
+ body.pp-toc-open .pp-toc{transform:none;box-shadow:0 0 24px rgba(0,0,0,.35)}
+ .pp-toc-btn{display:block;position:fixed;right:16px;bottom:16px;z-index:11;font:inherit;font-family:var(--display,monospace);padding:8px 14px;cursor:pointer;
+  border-radius:999px;border:1px solid color-mix(in srgb,var(--muted,#888) 40%,transparent);background:var(--bg,#fff);color:var(--fg,#000);box-shadow:0 2px 8px rgba(0,0,0,.25)}}`;
+document.head.appendChild(st);
+const el=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e};
+const link=h=>{const a=el('a',null,h.textContent);a.href='#'+h.id;return a};
+// まとまりを作る(同じ名前は最初に出た所に集める)
+const items=[],byName={};
+hs.forEach((h,i)=>{if(!h.id)h.id='s'+(i+1);const g=h.closest('[data-group]');const name=g?g.dataset.group:null;
+  if(name){if(!byName[name]){byName[name]={name,hs:[]};items.push(byName[name])}byName[name].hs.push(h)}else items.push({name:null,hs:[h]})});
+const nav=el('nav','pp-toc'),ol=el('ol');nav.setAttribute('aria-label','目次');
+const rowOf=new Map(),subOf=new Map(),groupOf=new Map(),groups=[];
+let cur=null,peek=null,hideCur=false;  // cur:今見ているまとまり。peek:三角でのぞいているまとまり。hideCur:今のまとまりを三角で閉じた
+const shown=()=>peek||(hideCur?null:cur);
+const apply=()=>groups.forEach(g=>{const o=g.name===shown();g.li.classList.toggle('open',o);g.tw.setAttribute('aria-expanded',String(o))});
+items.forEach((it,n)=>{const li=el('li'),row=el('div','pp-row');row.append(el('span','pp-no',String(n+1)));
+  const top=link(it.hs[0]);if(it.name)top.textContent=it.name;row.append(top);li.append(row);
+  if(it.name&&it.hs.length>1){const tw=el('button','pp-tw','▸');tw.type='button';tw.title='細かい目次';row.append(tw);
+    const wrap=el('div','pp-wrap'),ul=el('ul','pp-sub');it.hs.forEach(h=>{const sl=el('li'),a=link(h);sl.append(a);ul.append(sl);subOf.set(h,a)});
+    wrap.append(ul);li.append(wrap);wrap.addEventListener('transitionend',e=>{if(e.propertyName==='grid-template-rows')keep()});
+    const g={name:it.name,li,tw};groups.push(g);
+    tw.addEventListener('click',()=>{if(shown()===it.name){if(peek===it.name)peek=null;else hideCur=true}
+      else{peek=it.name===cur?null:it.name;hideCur=false}apply()});
+    top.addEventListener('click',()=>{cur=it.name;peek=null;hideCur=false;apply()})}
+  else if(it.name)top.title=it.hs[0].textContent;
+  it.hs.forEach(h=>{rowOf.set(h,row);groupOf.set(h,it.name)});ol.append(li)});
+nav.append(el('div','pp-toc-title','目次'),ol);
+const btn=el('button','pp-toc-btn','目次');btn.type='button';btn.setAttribute('aria-expanded','false');
+const show=o=>{document.body.classList.toggle('pp-toc-open',o);btn.setAttribute('aria-expanded',String(o))};
+btn.addEventListener('click',()=>show(!document.body.classList.contains('pp-toc-open')));
+nav.addEventListener('click',e=>{if(e.target.closest('a'))show(false)});
+document.body.append(nav,btn);document.body.classList.add('pp-has-toc');
+// 今見ている項目:画面の上から1/3の線より上にある最後の見出し。そのまとまりを開き、目次の中で見えなくなったら目次だけをスクロールする
+// 細かい目次はグイっと開く(高さを 0 から伸ばす)ので、開き終わったときにも見える位置か確かめ直す
+let curH=hs[0];
+const keep=()=>{const row=rowOf.get(curH),sub=subOf.get(curH),vis=sub&&sub.closest('li.open')?sub:row,r=vis.getBoundingClientRect(),n=nav.getBoundingClientRect();
+  if(r.top<n.top)nav.scrollTop+=r.top-n.top-8;else if(r.bottom>n.bottom)nav.scrollTop+=r.bottom-n.bottom+8};
+const mark=()=>{const y=innerHeight/3;let h=hs[0];hs.forEach(x=>{if(x.getBoundingClientRect().top<y)h=x});curH=h;
+  const g=groupOf.get(h);if(g!==cur){cur=g;peek=null;hideCur=false}apply();
+  nav.querySelectorAll('.on').forEach(e=>e.classList.remove('on'));
+  const row=rowOf.get(h),sub=subOf.get(h);row.classList.add('on');if(sub)sub.classList.add('on');keep()};
+addEventListener('scroll',mark,{passive:true});addEventListener('resize',mark);mark();})();
+</script>
+</body></html>
