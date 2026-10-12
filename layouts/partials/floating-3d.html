@@ -2,6 +2,22 @@
 
 <script>
   window.addEventListener('load', function () {
+    const cube = document.getElementById('article-cube-container')
+    const statusline = document.querySelector('.vim-statusline')
+    if (cube && statusline) {
+      let frame = 0
+      const placeCube = function () {
+        frame = 0
+        const offset = Math.max(0, window.innerHeight - statusline.getBoundingClientRect().top)
+        cube.style.transform = `translateY(${-offset}px)`
+      }
+      const schedulePlacement = function () {
+        if (!frame) frame = window.requestAnimationFrame(placeCube)
+      }
+      schedulePlacement()
+      window.addEventListener('scroll', schedulePlacement, { passive: true })
+      window.addEventListener('resize', schedulePlacement, { passive: true })
+    }
     if (typeof window.initCube === 'function') {
       window.initCube('article-cube-container', 0.72, 'rubiks', 'article')
     }

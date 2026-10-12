@@ -48,6 +48,11 @@
   weight = 20
 
 [[main]]
+  name = "map"
+  pageRef = "map"
+  weight = 21
+
+[[main]]
   name = "カテゴリー"
   pageRef = "categories"
   weight = 30

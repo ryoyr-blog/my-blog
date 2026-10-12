@@ -1,0 +1,4 @@
+{{ $anchor := anchorize .Anchor }}
+<h{{ .Level }} class="relative">{{ .Text | safeHTML }}
+    <div id="{{ $anchor }}" class="anchor"></div>
+</h{{ .Level }}>

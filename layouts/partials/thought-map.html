@@ -1,0 +1,29 @@
+{{ $site := .Site }}
+{{ $groups := slice }}
+{{ with .Site.Data.thought_map }}
+  {{ $groups = .groups | default slice }}
+{{ end }}
+{{ with $groups }}
+<section class="thought-map" aria-labelledby="thought-map-title">
+  <div class="thought-map-intro">
+    <p class="thought-map-kicker">THOUGHT MAP / {{ printf "%02d" (len $groups) }} THEMES</p>
+    <h1 id="thought-map-title">思考の地図</h1>
+  </div>
+
+  <div class="thought-network" data-thought-network>
+    <svg class="thought-network-canvas" role="group" aria-label="思考の記事・テーマ・タグをつなぐ図"></svg>
+    <div class="thought-network-source" hidden>
+      {{ range $index, $group := $groups }}
+        <div data-kind="theme" data-id="theme-{{ $index }}" data-label="{{ $group.title }}" data-description="{{ $group.description }}"></div>
+        {{ range $group.articles }}
+          {{ $entry := . }}
+          {{ with $site.GetPage $entry.path }}
+            <a href="{{ .RelPermalink }}" data-kind="article" data-id="{{ .File.BaseFileName }}" data-theme="theme-{{ $index }}" data-short="{{ $entry.short }}" data-description="{{ $entry.description }}" data-tags="{{ delimit .Params.tags "|" }}">{{ .LinkTitle }}</a>
+          {{ end }}
+        {{ end }}
+      {{ end }}
+    </div>
+  </div>
+</section>
+{{ end }}
+{{ with $groups }}<script defer src="{{ "js/thought-network.js" | relURL }}"></script>{{ end }}

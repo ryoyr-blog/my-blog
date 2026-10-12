@@ -1,0 +1,41 @@
+[[groups]]
+title = "意識と「私」"
+description = "主観的な経験はなぜ生まれ，時間の中で「私」はどう続くのか．"
+
+  [[groups.articles]]
+  path = "/posts/problem_of_consciousness"
+  short = "意識の3問題"
+  description = "意識の存在・時間的な不変性・唯一無二性を，別々の問いとして整理する．"
+
+  [[groups.articles]]
+  path = "/posts/time_and_consciousness"
+  short = "時間と意識"
+  description = "変化する経験と，変わらないように感じる「私」の関係を考える．"
+
+[[groups]]
+title = "AIと人間"
+description = "AIが身近になると，思考や創造，経験の価値はどう変わるのか．"
+
+  [[groups.articles]]
+  path = "/posts/moved_by_ai"
+  short = "AIの言葉"
+  description = "AIの言葉に動かされることへの戸惑いから，思考の価値を問い直す．"
+
+  [[groups.articles]]
+  path = "/posts/ai_adoption_and_regulation"
+  short = "AIの普及"
+  description = "AIが進む社会で，人間の創造や経験に残る価値を考える．"
+
+[[groups]]
+title = "作品と自分"
+description = "作品に触れて知る自分と，批評しながら残る感情．"
+
+  [[groups.articles]]
+  path = "/posts/necessity_of_art_criticism"
+  short = "芸術批評"
+  description = "作品の意味を決めることと，作品を通じて自分を知ることを分けて考える．"
+
+  [[groups.articles]]
+  path = "/posts/new_article"
+  short = "欅坂46"
+  description = "好きだったグループの終わりと，今も残る未練を見つめる．"

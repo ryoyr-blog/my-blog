@@ -96,96 +96,6 @@
     return { width, height, positions };
   }
 
-  // 配置は表示前に計算し，計算中の動きは画面に出さない。
-  function calculateLayout(mobile) {
-    const width = mobile ? 400 : 1000;
-    const height = Math.max(mobile ? 760 : 620, nodes.length * (mobile ? 34 : 19));
-    const context = document.createElement("canvas").getContext("2d");
-    const positions = new Map();
-    const items = nodes.map((node, index) => {
-      const angle = index * 2.399963;
-      const radius = Math.sqrt(index / Math.max(1, nodes.length - 1));
-      const item = {
-        node,
-        x: width / 2 + Math.cos(angle) * width * .34 * radius,
-        y: height / 2 + Math.sin(angle) * height * .36 * radius,
-      };
-      context.font = `${node.kind === "root" ? 22 : node.kind === "theme" ? 19 : node.kind === "tag" ? 13 : 17}px ${getComputedStyle(svg).fontFamily}`;
-      item.labelWidth = mobile && node.kind === "tag" ? 0 : context.measureText(node.label).width;
-      positions.set(node.id, item);
-      return item;
-    });
-    const constraints = [];
-    for (let i = 0; i < articles.length; i += 1) {
-      for (let j = i + 1; j < articles.length; j += 1) {
-        const a = new Set(articles[i].tags);
-        const b = new Set(articles[j].tags);
-        const union = new Set([...a, ...b]).size;
-        const common = [...a].filter((tag) => b.has(tag)).length;
-        const similarity = union ? common / union : 0;
-        constraints.push({
-          from: articles[i].id, to: articles[j].id,
-          distance: (mobile ? 250 : 420) - similarity * (mobile ? 155 : 280),
-          strength: .035,
-        });
-      }
-    }
-    edges.forEach((edge) => constraints.push({
-      ...edge,
-      distance: edge.kind === "tag" ? (mobile ? 85 : 110) : (mobile ? 130 : 180),
-      strength: edge.kind === "tag" ? .012 : .006,
-    }));
-    const bounds = (item) => {
-      const leftLabel = item.x > width * .72;
-      return {
-        left: item.x - (leftLabel ? item.labelWidth + 19 : 16),
-        right: item.x + (leftLabel ? 16 : item.labelWidth + 19),
-        top: item.y - 17, bottom: item.y + 17,
-      };
-    };
-    for (let iteration = 0; iteration < 600; iteration += 1) {
-      const cooling = 1 - iteration / 750;
-      constraints.forEach(({ from, to, distance, strength }) => {
-        const a = positions.get(from);
-        const b = positions.get(to);
-        const dx = b.x - a.x;
-        const dy = b.y - a.y;
-        const length = Math.max(1, Math.hypot(dx, dy));
-        const force = (length - distance) * strength * cooling;
-        a.x += dx / length * force;
-        a.y += dy / length * force;
-        b.x -= dx / length * force;
-        b.y -= dy / length * force;
-      });
-      for (let i = 0; i < items.length; i += 1) {
-        for (let j = i + 1; j < items.length; j += 1) {
-          const a = items[i];
-          const b = items[j];
-          const ab = bounds(a);
-          const bb = bounds(b);
-          const overlapX = Math.min(ab.right, bb.right) - Math.max(ab.left, bb.left);
-          const overlapY = Math.min(ab.bottom, bb.bottom) - Math.max(ab.top, bb.top);
-          if (overlapX <= 0 || overlapY <= 0) continue;
-          if (overlapX < overlapY) {
-            const shift = (overlapX + 2) * .52 * (a.x < b.x ? -1 : 1);
-            a.x += shift;
-            b.x -= shift;
-          } else {
-            const shift = (overlapY + 2) * .52 * (a.y < b.y ? -1 : 1);
-            a.y += shift;
-            b.y -= shift;
-          }
-        }
-      }
-      items.forEach((item) => {
-        const box = bounds(item);
-        item.x += Math.max(0, 8 - box.left) - Math.max(0, box.right - width + 8);
-        item.y = Math.max(22, Math.min(height - 22, item.y));
-      });
-    }
-    return { width, height, positions: new Map(items.map((item) => [item.node.id, [item.x, item.y]])) };
-  }
-
   function permutations(list) {
     if (list.length <= 1) return [list];
     return list.flatMap((item, index) => permutations([...list.slice(0, index), ...list.slice(index + 1)])
@@ -289,22 +199,13 @@
         dot: { root: 12, theme: 8, article: 6, tag: 3.5 }[node.kind],
         halfHeight: fontSizes[node.kind] * .72,
         labelWidth: mobile && node.kind === "tag" ? 0 : context.measureText(node.label).width,
-        // 文字は中心から外向きに出す。幅の狭いスマホでは，テーマと記事の名前を点の下に置く
-        side: mobile && (node.kind === "theme" || node.kind === "article") ? "below"
-          : node.kind !== "root" && x < -1 ? "end" : "start",
+        // 文字は中心から外向きに出す
+        side: node.kind !== "root" && x < -1 ? "end" : "start",
       };
     });
     const byId = new Map(items.map((item) => [item.node.id, item]));
     const half = width / 2;
     const box = (item) => {
-      if (item.side === "below") {
-        return {
-          left: item.x - Math.max(item.labelWidth / 2, item.dot + 2),
-          right: item.x + Math.max(item.labelWidth / 2, item.dot + 2),
-          top: item.y - item.dot - 3,
-          bottom: item.y + item.dot + 6 + item.halfHeight * 2,
-        };
-      }
       const label = item.labelWidth ? item.labelWidth + 15 : item.dot + 2;
       return {
         left: item.x - (item.side === "end" ? label : item.dot + 2),
@@ -316,7 +217,6 @@
     // 外向きの文字が画面からはみ出すときは内向きにする
     const fitSide = (item) => {
       const bounds = box(item);
-      if (item.side === "below") return;
       if (bounds.left < padding - half || bounds.right > half - padding) item.side = item.side === "end" ? "start" : "end";
     };
     items.forEach(fitSide);
@@ -398,7 +298,6 @@
       width,
       height: Math.ceil(bottom - top),
       positions: new Map(items.map((item) => [item.node.id, [item.x + half, item.y - top]])),
-      sides: new Map(items.map((item) => [item.node.id, item.side])),
     };
   }
 
@@ -495,11 +394,7 @@
     returnFrame = null;
     dragState = null;
     network.classList.remove("is-dragging");
-    // ?layout=force で力学配置，?layout=radial で同心円の配置を表示し，比べられるようにする
-    const layoutName = new URLSearchParams(window.location.search).get("layout");
-    const { width, height, positions, sides } = layoutName === "force" ? calculateLayout(mobile)
-      : layoutName === "radial" ? calculateRadialLayout(mobile)
-        : calculateFixedLayout(mobile);
+    const { width, height, positions } = calculateFixedLayout(mobile);
     svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
     svg.style.aspectRatio = `${width} / ${height}`;
     svg.replaceChildren();
@@ -526,13 +421,11 @@
         tabindex: "0",
         "aria-label": `${node.kind === "article" ? "記事を開く" : node.kind === "tag" ? "タグ" : node.kind === "root" ? "思考の地図" : "テーマ"}: ${node.title || node.label}`,
       });
-      const anchor = sides?.get(node.id) ?? (x > width * .72 ? "end" : "start");
+      const anchor = x > width * .72 ? "end" : "start";
       group.append(svgElement("circle", { class: "thought-network-hit", r: mobile ? 24 : 19 }));
       const dotRadius = { root: 12, theme: 8, article: 6, tag: 3.5 }[node.kind];
       group.append(svgElement("circle", { class: "thought-network-dot", r: dotRadius }));
-      const label = anchor === "below"
-        ? svgElement("text", { x: 0, y: dotRadius + ({ theme: 19, article: 17 }[node.kind] || 13) + 2, "text-anchor": "middle" })
-        : svgElement("text", { x: anchor === "end" ? -13 : 13, y: 4, "text-anchor": anchor });
+      const label = svgElement("text", { x: anchor === "end" ? -13 : 13, y: 4, "text-anchor": anchor });
       label.textContent = node.label;
       group.append(label);
       group.addEventListener("pointerenter", (event) => {
