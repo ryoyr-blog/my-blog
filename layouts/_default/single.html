@@ -65,8 +65,6 @@
           {{ end }}
         </div>
         {{ if eq .Section "posts" }}
-          {{/* Vimでファイルの終わりより下に出る ~ の行 */}}
-          <div class="vim-eof" aria-hidden="true"><span>~</span><span>~</span><span>~</span><span>~</span></div>
           <script defer src="{{ "js/vim-statusline.js" | relURL }}"></script>
         {{ end }}
         {{ if (.Params.showAuthorBottom | default (site.Params.article.showAuthorBottom | default false)) }}

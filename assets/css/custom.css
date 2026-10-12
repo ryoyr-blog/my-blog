@@ -593,10 +593,10 @@ html.dark #appearance-switcher-mobile:focus-visible {
 .vim-file-context { margin: 0 0 .72rem; }
 .vim-file-context span { color: var(--lab-violet); }
 
-/* ステータスラインは画面の下に固定し，記事の終わりまで来たら本来の位置で止める */
+/* ステータスラインは画面の下から少し離して固定し，記事の終わりまで来たら本来の位置で止める */
 .vim-statusline {
   position: sticky;
-  bottom: 0;
+  bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
   z-index: 20;
   display: grid;
   grid-template-columns: auto minmax(0,1fr);
@@ -621,18 +621,6 @@ html.dark #appearance-switcher-mobile:focus-visible {
 .vim-status-file { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .vim-status-meta:last-child { padding-right: .68rem; }
 .vim-status-position { min-width: 2.6em; text-align: right; }
-
-/* Vimでファイルの終わりより下に出る ~ の行 */
-.vim-eof {
-  display: grid;
-  margin: -3.4rem 0 3.6rem;
-  color: var(--lab-violet);
-  font-family: var(--lab-mono);
-  font-size: .9rem;
-  line-height: 1.95;
-  opacity: .5;
-  user-select: none;
-}
 .shell-error { margin-top: .85rem; margin-bottom: 0; }
 
 /* Search: display-only Unix / grep layer over the unchanged Blowfish/Fuse search. */
@@ -986,6 +974,13 @@ html.dark #appearance-switcher-mobile:focus-visible {
 #scroll-to-top a:focus-visible {
   background: var(--lab-violet-soft) !important;
   color: var(--lab-violet) !important;
+}
+
+/* 幅が狭いと画面の下のステータスラインと重なるので，記事のページでは上へ戻るボタンをその上に置く */
+@media (max-width:1023px) {
+  body:has(.vim-statusline) #scroll-to-top {
+    bottom: calc(3.7rem + env(safe-area-inset-bottom, 0px));
+  }
 }
 
 #the-top a {

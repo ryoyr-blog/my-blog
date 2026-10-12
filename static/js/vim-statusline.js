@@ -1,4 +1,4 @@
-// ステータスラインの右端に，Vimと同じように読んでいる位置（Top / 37% / Bot / All）を出す
+// ステータスラインの右端に，Vimと同じように読んでいる位置（Top / 37% / 100%）を出す。本文の終わりが見えたら 100%
 (() => {
   const position = document.querySelector(".vim-status-position");
   const content = document.querySelector(".article-content");
@@ -15,9 +15,8 @@
     const topVisible = rect.top >= 0;
     const bottomVisible = rect.bottom <= visibleBottom;
     let label;
-    if (topVisible && bottomVisible) label = "All";
+    if (bottomVisible) label = "100%";
     else if (topVisible) label = "Top";
-    else if (bottomVisible) label = "Bot";
     else {
       const scrollable = rect.height - visibleBottom;
       label = `${Math.min(99, Math.max(1, Math.round(-rect.top / scrollable * 100)))}%`;
