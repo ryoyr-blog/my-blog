@@ -1,0 +1,39 @@
+{{/* XやLINEなどで共有したときのカード。assets/og/base.png にページのタイトルを書き込んだ画像を使う */}}
+{{ $base := resources.Get "og/base.png" }}
+{{ $font := resources.Get "fonts/BIZUDPGothic-Bold.ttf" }}
+{{ $description := or .Description site.Params.description }}
+
+{{ $title := .Title }}
+{{ $size := 60 }}
+{{ $max := 17 }}
+{{ $note := "" }}
+{{ if .IsHome }}
+  {{ $title = site.Params.description }}
+  {{ $size = 44 }}
+  {{ $max = 22 }}
+{{ else if and .IsPage (eq .Section "posts") }}
+  {{ $note = .Date.Format "2006.01.02" }}
+  {{ with .Params.categories }}{{ $note = printf "%s / %s" (index . 0) $note }}{{ end }}
+{{ else if eq .Kind "term" }}
+  {{ $note = printf "%s / %d本の記事" (cond (eq .Data.Plural "tags") "タグ" "カテゴリー") (len .Pages) }}
+{{ else }}
+  {{ $note = .Description }}
+{{ end }}
+
+{{ $filters := slice }}
+{{ range $index, $line := partial "social-card-lines.html" (dict "text" $title "max" $max "lines" 3) }}
+  {{ $filters = $filters | append (images.Text $line (dict "font" $font "size" $size "color" "#17171b" "x" 72 "y" (add 178 (mul $index (math.Round (mul $size 1.4)))))) }}
+{{ end }}
+{{ with $note }}
+  {{ $filters = $filters | append (images.Text (index (partial "social-card-lines.html" (dict "text" . "max" 38 "lines" 1)) 0) (dict "font" $font "size" 26 "color" "#74747d" "x" 72 "y" 452)) }}
+{{ end }}
+{{ $card := $base | images.Filter $filters }}
+
+<meta property="og:image" content="{{ $card.Permalink }}">
+<meta property="og:image:width" content="{{ $card.Width }}">
+<meta property="og:image:height" content="{{ $card.Height }}">
+<meta property="og:image:alt" content="{{ .Title }}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="{{ $card.Permalink }}">
+<meta name="twitter:title" content="{{ .Title }}">
+{{ with $description }}<meta name="twitter:description" content="{{ . }}">{{ end }}

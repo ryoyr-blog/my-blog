@@ -398,6 +398,19 @@ html.dark #appearance-switcher-mobile:focus-visible {
   margin-top: clamp(3.25rem,8.8vw,7.2rem);
 }
 
+/* 記事の最後の，思考の地図へのリンクと関連記事 */
+.thought-map-link {
+  margin: -2.5rem 0 3rem;
+}
+
+.thought-map-link .lab-index-link {
+  margin-top: 0;
+}
+
+.related-logs {
+  margin: 1rem 0 4rem;
+}
+
 .section-heading {
   display: flex;
   align-items: end;
@@ -1521,6 +1534,13 @@ body:has(.taxonomy-index--tags) .site-nav a.is-current:focus-visible {
 .thought-network-node:focus-visible .thought-network-hit {
   stroke: var(--lab-violet);
   stroke-width: 2;
+}
+
+/* 記事のページから開いたときの，その記事の点の印 */
+.thought-network-node.is-target .thought-network-hit {
+  stroke: var(--lab-orange);
+  stroke-width: 1.5;
+  stroke-dasharray: 3 4;
 }
 
 .thought-network-dot {

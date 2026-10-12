@@ -1,5 +1,6 @@
 +++
 title = "blowfishの設定で詰まったら"
+description = "Hugoのテーマ Blowfish で，faviconが変わらないときの確かめ方と，日付の表示の変え方をまとめる．"
 date = "2026-02-05T23:26:01+09:00"
 draft = false
 categories = ["技術"]

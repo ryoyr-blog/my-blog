@@ -512,8 +512,18 @@
       const selected = nodes.find((node) => node.id === selectedId);
       if (selected) select(selected);
     }
+    selectFromHash();
   }
 
+  // 記事のページから /map/#記事のファイル名 で開いたら，その記事の点を選び，印の輪を付ける
+  function selectFromHash() {
+    const id = decodeURIComponent(window.location.hash.slice(1));
+    nodeElements.forEach(({ node, element }) => element.classList.toggle("is-target", node.id === id));
+    const target = nodes.find((node) => node.id === id);
+    if (target) select(target);
+  }
+
+  window.addEventListener("hashchange", selectFromHash);
   render();
   // 文字の幅を正しく測るため，フォントが読み込まれたら配置し直す
   document.fonts?.ready.then(render);

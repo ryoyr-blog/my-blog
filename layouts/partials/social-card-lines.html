@@ -1,0 +1,27 @@
+{{/* 共有カード用に，文字列を1行 max 文字までに分ける。
+     文の終わりでは必ず切り，句読点や閉じ括弧で切れるならそこで切る。閉じる記号は行頭に来ないようにする。lines 行を超えたら「…」で省く */}}
+{{ $max := .max }}
+{{ $closers := "，、。．」』）！？" }}
+{{ $lines := slice }}
+{{ $line := "" }}
+{{ $count := 0 }}
+{{ range split .text "" }}
+  {{ if and (ge $count $max) (not (in $closers .)) }}
+    {{ $lines = $lines | append $line }}
+    {{ $line = "" }}
+    {{ $count = 0 }}
+  {{ end }}
+  {{ $line = print $line . }}
+  {{ $count = add $count 1 }}
+  {{ if or (in "。．" .) (and (ge $count (div (mul $max 3) 5)) (in (print $closers "・") .)) }}
+    {{ $lines = $lines | append $line }}
+    {{ $line = "" }}
+    {{ $count = 0 }}
+  {{ end }}
+{{ end }}
+{{ with $line }}{{ $lines = $lines | append . }}{{ end }}
+{{ if gt (len $lines) .lines }}
+  {{ $last := index $lines (sub .lines 1) }}
+  {{ $lines = (first (sub .lines 1) $lines) | append (print (substr $last 0 (sub $max 1)) "…") }}
+{{ end }}
+{{ return $lines }}

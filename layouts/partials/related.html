@@ -1,0 +1,26 @@
+{{/* 記事の最後に，タグとカテゴリーが近い記事を，トップページの一覧と同じ見た目で出す */}}
+{{ if .Params.showRelatedContent | default (site.Params.article.showRelatedContent | default false) }}
+  {{ with .Site.RegularPages.Related . | first (site.Params.article.relatedContentLimit | default 3) }}
+    <section class="related-logs not-prose" aria-labelledby="related-logs-title">
+      <div class="section-heading">
+        <p class="eyebrow"><span></span> NEXT NOTES</p>
+        <h2 id="related-logs-title">Related logs</h2>
+      </div>
+      <div class="editorial-list">
+        {{ range . }}
+          <article class="log-entry">
+            <div class="entry-stamp">
+              <span class="log-number">{{ partial "log-number.html" . }}</span>
+              <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006.01.02" }}</time>
+            </div>
+            <div>
+              <h3><a href="{{ .RelPermalink }}">{{ .Title | emojify }}</a></h3>
+              {{ with .Description }}<p>{{ . }}</p>{{ end }}
+              {{ partial "article-terms.html" (dict "context" . "maxTags" 3) }}
+            </div>
+          </article>
+        {{ end }}
+      </div>
+    </section>
+  {{ end }}
+{{ end }}

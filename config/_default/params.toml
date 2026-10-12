@@ -18,6 +18,9 @@ enableStructuredBreadcrumbs = false
 
 replyByEmail = false
 
+# アクセス解析（GoatCounter）。登録した名前（例: "ryoyr" なら ryoyr.goatcounter.com）を書くと，公開サイトで計測が始まる
+goatcounter = "ryoyr-wq"
+
 # mainSections = ["section1", "section2"]
 # robots = ""
 
@@ -86,8 +89,8 @@ forgejoDefaultServer = "https://v11.next.forgejo.org"
   invertPagination = false
   showReadingTime = false
   showTableOfContents = true
-  # showRelatedContent = false
-  # relatedContentLimit = 3
+  showRelatedContent = true
+  relatedContentLimit = 3
   showTaxonomies = true # use showTaxonomies OR showCategoryOnly, not both
   showCategoryOnly = false # use showTaxonomies OR showCategoryOnly, not both
   showAuthorsBadges = false

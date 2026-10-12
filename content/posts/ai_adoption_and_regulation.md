@@ -1,5 +1,6 @@
 +++
 title = "AIの普及と規制"
+description = "AIが進む社会で，人間の創造や経験に残る価値を考える．"
 date = "2026-10-11T23:40:27+09:00"
 draft = false
 categories = ["思考"]
