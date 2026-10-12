@@ -20,6 +20,7 @@
     description: element.dataset.description,
     theme: element.dataset.theme,
     tags: element.dataset.tags.split("|").filter(Boolean),
+    tagUrls: (element.dataset.tagPages || "").split("|").filter(Boolean),
     url: element.href,
   }));
 
@@ -27,11 +28,11 @@
   articles.forEach((article) => article.tags.forEach((tag) => {
     tagCounts.set(tag, (tagCounts.get(tag) || 0) + 1);
   }));
-  const tags = [...tagCounts].filter(([, count]) => count > 1).map(([label]) => ({
-    id: `tag-${label}`,
-    kind: "tag",
-    label,
-  }));
+  const tags = [...tagCounts].filter(([, count]) => count > 1).map(([label]) => {
+    // タグのページのURLは，Hugoが記事ごとに出した順番どおりのURLから取る
+    const article = articles.find((item) => item.tags.includes(label));
+    return { id: `tag-${label}`, kind: "tag", label, url: article.tagUrls[article.tags.indexOf(label)] };
+  });
   const nodes = [{ id: "root", kind: "root", label: "思考" }, ...themes, ...articles, ...tags];
   const edges = [
     ...themes.map((theme) => ({ from: "root", to: theme.id, kind: "main" })),
@@ -342,7 +343,7 @@
 
   function activate(node) {
     select(node);
-    if (node.kind === "article") window.location.assign(node.url);
+    if ((node.kind === "article" || node.kind === "tag") && node.url) window.location.assign(node.url);
   }
 
   function updateGraphPositions() {
@@ -417,9 +418,9 @@
       const group = svgElement("g", {
         class: `thought-network-node thought-network-node--${node.kind}`,
         transform: `translate(${x} ${y})`,
-        role: node.kind === "article" ? "link" : "button",
+        role: node.kind === "article" || node.kind === "tag" ? "link" : "button",
         tabindex: "0",
-        "aria-label": `${node.kind === "article" ? "記事を開く" : node.kind === "tag" ? "タグ" : node.kind === "root" ? "思考の地図" : "テーマ"}: ${node.title || node.label}`,
+        "aria-label": `${node.kind === "article" ? "記事を開く" : node.kind === "tag" ? "タグのページを開く" : node.kind === "root" ? "思考の地図" : "テーマ"}: ${node.title || node.label}`,
       });
       const anchor = x > width * .72 ? "end" : "start";
       group.append(svgElement("circle", { class: "thought-network-hit", r: mobile ? 24 : 19 }));
@@ -452,6 +453,8 @@
         if (event.button !== 0 || node.kind === "root") return;
         const item = stateById.get(node.id);
         if (!item) return;
+        // ドラッグのあとにクリックが起きなかった場合でも，次のクリックを無視しないようにする
+        delete group.dataset.dragged;
         item.returning = null;
         dragState = {
           item,
@@ -515,10 +518,9 @@
     selectFromHash();
   }
 
-  // 記事のページから /map/#記事のファイル名 で開いたら，その記事の点を選び，印の輪を付ける
+  // 記事のページから /map/#記事のファイル名 で開いたら，その記事の点を選ぶ
   function selectFromHash() {
     const id = decodeURIComponent(window.location.hash.slice(1));
-    nodeElements.forEach(({ node, element }) => element.classList.toggle("is-target", node.id === id));
     const target = nodes.find((node) => node.id === id);
     if (target) select(target);
   }

@@ -1,0 +1,14 @@
+{{/* 本文の終わりに，思考の地図でこの記事の点を選んだ状態で開くボタンを置く。地図に載っていない記事には出さない */}}
+{{ with partial "thought-map-url.html" . }}
+  <p class="thought-map-button not-prose">
+    <a href="{{ . }}" aria-label="思考の地図でこの記事を見る">
+      <svg width="22" height="16" viewBox="0 0 22 16" aria-hidden="true">
+        <path d="M4 12 L11 4 L18 10 M11 4 L18 10" stroke="var(--lab-line)" stroke-width="1.4" fill="none"/>
+        <circle cx="4" cy="12" r="2.4" fill="var(--lab-secondary)"/>
+        <circle cx="11" cy="4" r="3" fill="var(--lab-violet)"/>
+        <circle cx="18" cy="10" r="2.4" fill="var(--lab-orange)"/>
+      </svg>
+      map <span class="thought-map-button-arrow" aria-hidden="true">↗</span>
+    </a>
+  </p>
+{{ end }}

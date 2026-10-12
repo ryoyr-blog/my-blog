@@ -398,17 +398,43 @@ html.dark #appearance-switcher-mobile:focus-visible {
   margin-top: clamp(3.25rem,8.8vw,7.2rem);
 }
 
-/* 記事の最後の，思考の地図へのリンクと関連記事 */
-.thought-map-link {
-  margin: -2.5rem 0 3rem;
+/* 本文の終わりと帯の間に置く，思考の地図へのボタン */
+.thought-map-button {
+  margin: -2.2rem 0 0;
 }
 
-.thought-map-link .lab-index-link {
-  margin-top: 0;
+.thought-map-button a {
+  display: inline-flex;
+  align-items: center;
+  gap: .6rem;
+  padding: .62rem 1rem .62rem .8rem;
+  border: 1px solid var(--lab-violet);
+  border-radius: 0;
+  color: var(--lab-ink) !important;
+  font-family: var(--lab-mono);
+  font-size: .78rem;
+  font-weight: 650;
+  letter-spacing: .06em;
+  text-decoration: none !important;
+  transition: background-color 160ms ease;
 }
 
+.thought-map-button a:hover,
+.thought-map-button a:focus-visible {
+  background: var(--lab-violet-soft);
+}
+
+.thought-map-button svg {
+  flex: none;
+}
+
+.thought-map-button .thought-map-button-arrow {
+  color: var(--lab-violet);
+}
+
+/* 記事の最後の関連記事 */
 .related-logs {
-  margin: 1rem 0 4rem;
+  margin: 2.8rem 0 4rem;
 }
 
 .section-heading {
@@ -567,9 +593,15 @@ html.dark #appearance-switcher-mobile:focus-visible {
 .vim-file-context { margin: 0 0 .72rem; }
 .vim-file-context span { color: var(--lab-violet); }
 
+/* ステータスラインは画面の下に固定し，記事の終わりまで来たら本来の位置で止める */
 .vim-statusline {
+  position: sticky;
+  bottom: 0;
+  z-index: 20;
   display: grid;
-  grid-template-columns: auto minmax(0,1fr) auto auto;
+  grid-template-columns: auto minmax(0,1fr);
+  grid-auto-columns: auto;
+  grid-auto-flow: column;
   align-items: center;
   gap: .7rem;
   min-width: 0;
@@ -588,6 +620,19 @@ html.dark #appearance-switcher-mobile:focus-visible {
 .vim-status-mode { padding-inline: .68rem !important; background: var(--lab-orange-soft); color: var(--lab-orange); font-weight: 700; }
 .vim-status-file { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .vim-status-meta:last-child { padding-right: .68rem; }
+.vim-status-position { min-width: 2.6em; text-align: right; }
+
+/* Vimでファイルの終わりより下に出る ~ の行 */
+.vim-eof {
+  display: grid;
+  margin: -3.4rem 0 3.6rem;
+  color: var(--lab-violet);
+  font-family: var(--lab-mono);
+  font-size: .9rem;
+  line-height: 1.95;
+  opacity: .5;
+  user-select: none;
+}
 .shell-error { margin-top: .85rem; margin-bottom: 0; }
 
 /* Search: display-only Unix / grep layer over the unchanged Blowfish/Fuse search. */
@@ -1117,7 +1162,6 @@ input:focus-visible {
   }
 
   .vim-statusline {
-    grid-template-columns: auto minmax(0,1fr) auto;
     gap: .45rem;
     font-size: .59rem;
   }
@@ -1534,13 +1578,6 @@ body:has(.taxonomy-index--tags) .site-nav a.is-current:focus-visible {
 .thought-network-node:focus-visible .thought-network-hit {
   stroke: var(--lab-violet);
   stroke-width: 2;
-}
-
-/* 記事のページから開いたときの，その記事の点の印 */
-.thought-network-node.is-target .thought-network-hit {
-  stroke: var(--lab-orange);
-  stroke-width: 1.5;
-  stroke-dasharray: 3 4;
 }
 
 .thought-network-dot {

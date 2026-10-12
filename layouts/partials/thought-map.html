@@ -18,7 +18,7 @@
         {{ range $group.articles }}
           {{ $entry := . }}
           {{ with $site.GetPage $entry.path }}
-            <a href="{{ .RelPermalink }}" data-kind="article" data-id="{{ .File.BaseFileName }}" data-theme="theme-{{ $index }}" data-short="{{ $entry.short }}" data-description="{{ $entry.description }}" data-tags="{{ delimit .Params.tags "|" }}">{{ .LinkTitle }}</a>
+            <a href="{{ .RelPermalink }}" data-kind="article" data-id="{{ .File.BaseFileName }}" data-theme="theme-{{ $index }}" data-short="{{ $entry.short }}" data-description="{{ $entry.description }}" data-tags="{{ delimit .Params.tags "|" }}" data-tag-pages="{{ range $i, $term := .GetTerms "tags" }}{{ if $i }}|{{ end }}{{ $term.RelPermalink }}{{ end }}">{{ .LinkTitle }}</a>
           {{ end }}
         {{ end }}
       {{ end }}

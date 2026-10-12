@@ -1,0 +1,13 @@
+{{/* 思考の地図に載っている記事なら，地図でこの記事の点を選んだ状態で開くURLを返す。載っていなければ空文字 */}}
+{{ $page := . }}
+{{ $url := "" }}
+{{ with site.Data.thought_map }}
+  {{ range .groups }}
+    {{ range .articles }}
+      {{ if eq (strings.TrimSuffix "/" .path) (printf "/%s/%s" $page.Section $page.File.BaseFileName) }}
+        {{ $url = printf "map/#%s" $page.File.BaseFileName | relLangURL }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+{{ return $url }}
