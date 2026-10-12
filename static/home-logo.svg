@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <style>
+    .dot { fill: #635bdb; }
+    .dot-orange { fill: #c66c32; }
+    @media (prefers-color-scheme: dark) {
+      .dot { fill: #aaa5ff; }
+      .dot-orange { fill: #e39962; }
+    }
+  </style>
+  <defs>
+    <mask id="orange-gap" maskUnits="userSpaceOnUse" x="0" y="0" width="64" height="64">
+      <rect width="64" height="64" fill="#fff"/>
+      <circle cx="41" cy="41" r="13" fill="#000"/>
+    </mask>
+  </defs>
+  <circle class="dot" cx="27" cy="27" r="16" mask="url(#orange-gap)"/>
+  <circle class="dot-orange" cx="41" cy="41" r="11"/>
+</svg>

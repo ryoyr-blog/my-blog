@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <style>
+    .dot { fill: #635bdb; }
+    .dot-orange { fill: #c66c32; }
+    @media (prefers-color-scheme: dark) {
+      .dot { fill: #aaa5ff; }
+      .dot-orange { fill: #e39962; }
+    }
+  </style>
+  <circle cx="32" cy="32" r="31" fill="#fff"/>
+  <circle class="dot" cx="27" cy="27" r="16"/>
+  <circle cx="41" cy="41" r="15" fill="#fff"/>
+  <circle class="dot-orange" cx="41" cy="41" r="13"/>
+</svg>

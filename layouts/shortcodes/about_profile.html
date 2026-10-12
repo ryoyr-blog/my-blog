@@ -1,0 +1,23 @@
+<div class="lab-profile">
+  {{ with resources.Get site.Params.Author.image }}
+    {{ $image := .Resize "320x" }}
+    <img
+      class="lab-profile__image nozoom"
+      src="{{ $image.RelPermalink }}"
+      alt="{{ site.Params.Author.name }}のプロフィール画像"
+      width="{{ $image.Width }}"
+      height="{{ $image.Height }}">
+  {{ end }}
+  <div class="lab-profile__text">
+    <p class="lab-profile__name">{{ site.Params.Author.name }}</p>
+    <div class="lab-profile__bio">{{ .Inner | markdownify }}</div>
+    {{ with .Get "x" }}
+      <a class="lab-profile__social"
+        href="https://x.com/{{ . }}"
+        aria-label="X：@{{ . }}"
+        title="X：@{{ . }}">
+        <span aria-hidden="true">{{ partial "icon.html" "x-twitter" }}</span>
+      </a>
+    {{ end }}
+  </div>
+</div>

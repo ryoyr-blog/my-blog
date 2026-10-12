@@ -1,0 +1,16 @@
+{
+  "tool": "create_image_pixflux",
+  "description": "A simple rustic squirrel mascot inspired by a casual hand-drawn doodle, for a minimalist personal research notebook blog. Full body, sitting upright, facing mostly forward, large curled tail, small ears, slightly uneven simple body shape, tiny black eyes, small understated mouth, a mildly absent-minded thoughtful expression. Holding a small violet notebook. White and light gray body, charcoal black single-color outline, a small violet accent. Crisp pixel art, limited palette, flat shading, readable silhouette, centered with margin. No text, no scenery, transparent background.",
+  "width": 48,
+  "height": 48,
+  "no_background": true,
+  "detail": "low detail",
+  "outline": "single color black outline",
+  "shading": "flat shading",
+  "view": "side",
+  "direction": "south",
+  "job_id": "2077384e-f5d4-43f4-b866-048846a62ff9",
+  "asset_id": "6eed36e5-a89e-5d2d-acaa-de073c291983",
+  "charged_generations": 1,
+  "status": "completed"
+}

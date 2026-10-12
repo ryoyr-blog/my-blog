@@ -28,9 +28,12 @@ html.dark {
 
 html {
   background: var(--lab-paper);
+  overflow-x: clip;
 }
 
 body {
+  /* Keep the logo's offscreen entrance from widening the page. */
+  overflow-x: clip;
   max-width: 78rem !important;
   padding: 0 2.5rem !important;
   background: var(--lab-paper) !important;
@@ -297,10 +300,29 @@ html.dark #appearance-switcher-mobile:focus-visible {
   background: var(--lab-orange);
 }
 
+.lab-intro {
+  container-type: inline-size;
+}
+
+.home-brand {
+  display: flex;
+  align-items: center;
+  gap: clamp(.75rem,4cqw,1.5rem);
+}
+
+.home-brand__icon {
+  flex: none;
+  width: clamp(3rem,15cqw,6rem);
+  height: auto;
+  /* Align to the visible letters, including their descenders. */
+  font-size: clamp(2.3rem,16cqw,7.75rem);
+  transform: translateY(.08em);
+}
+
 .lab-hero h1 {
   margin: 0;
   color: var(--lab-ink);
-  font-size: clamp(3.5rem,9vw,7.75rem);
+  font-size: clamp(2.3rem,16cqw,7.75rem);
   font-weight: 720;
   letter-spacing: -.08em;
   line-height: .87;
@@ -1010,10 +1032,6 @@ input:focus-visible {
     min-height: auto;
   }
 
-  .lab-hero h1 {
-    font-size: clamp(3.5rem,19vw,5.4rem);
-  }
-
   .lab-object-wrap {
     min-height: 19rem;
     border-top: 1px solid var(--lab-line);
@@ -1542,6 +1560,62 @@ article > footer a:hover {
 
 .lab-document-content :where(h2):not(:where([class~="not-prose"] *)) {
   margin-top: 2.6em;
+}
+
+.lab-profile {
+  display: grid;
+  grid-template-columns: clamp(4.5rem,20vw,9rem) minmax(0,1fr);
+  align-items: center;
+  gap: clamp(1rem,3vw,2rem);
+  margin: 1.5rem 0;
+}
+
+.lab-profile__image {
+  width: 100%;
+  height: auto;
+  margin: 0;
+  border: 1px solid var(--lab-line);
+  border-radius: 50%;
+}
+
+.lab-profile__text {
+  min-width: 0;
+}
+
+.lab-profile__text > :first-child {
+  margin-top: 0;
+}
+
+.lab-profile__text > :last-child {
+  margin-bottom: 0;
+}
+
+.lab-profile__text .lab-profile__name {
+  margin: 0 0 .5rem;
+  color: var(--lab-ink);
+  font-size: 1.2em;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.lab-profile__social {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  margin-top: .5rem;
+  color: var(--lab-muted) !important;
+  text-decoration: none !important;
+}
+
+.lab-profile__social:hover {
+  color: var(--lab-violet) !important;
+}
+
+.lab-profile__social svg {
+  width: 1.1rem;
+  height: 1.1rem;
 }
 
 /* 404 */
