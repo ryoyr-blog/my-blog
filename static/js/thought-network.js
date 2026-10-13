@@ -311,6 +311,7 @@
   let nodeElements = [];
   let edgeElements = [];
   let selectedId = null;
+  let activatedId = null;
   let nodeStates = [];
   let stateById = new Map();
   let dragState = null;
@@ -341,9 +342,19 @@
 
   }
 
+  function restoreHighlight() {
+    const active = nodes.find((node) => node.id === activatedId);
+    if (active) select(active);
+    else clearHighlight();
+  }
+
   function activate(node) {
+    const repeated = activatedId === node.id;
+    activatedId = node.id;
     select(node);
-    if ((node.kind === "article" || node.kind === "tag") && node.url) window.location.assign(node.url);
+    if (repeated && (node.kind === "article" || node.kind === "tag") && node.url) {
+      window.location.assign(node.url);
+    }
   }
 
   function updateGraphPositions() {
@@ -434,12 +445,12 @@
       });
       group.addEventListener("pointerleave", (event) => {
         if ((event.pointerType === "mouse" || event.pointerType === "pen") && !group.matches(":focus-visible")) {
-          clearHighlight();
+          restoreHighlight();
         }
       });
       group.addEventListener("focus", () => select(node));
       group.addEventListener("blur", (event) => {
-        if (!event.relatedTarget?.classList?.contains("thought-network-node")) clearHighlight();
+        if (!event.relatedTarget?.classList?.contains("thought-network-node")) restoreHighlight();
       });
       group.addEventListener("click", (event) => {
         if (group.dataset.dragged === "true") {
