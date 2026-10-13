@@ -8,11 +8,10 @@
     }
   </style>
   <defs>
-    <mask id="orange-gap" maskUnits="userSpaceOnUse" x="0" y="0" width="64" height="64">
-      <rect width="64" height="64" fill="#fff"/>
-      <circle cx="41" cy="41" r="13" fill="#000"/>
-    </mask>
+    <clipPath id="orange-gap" clipPathUnits="userSpaceOnUse">
+      <path clip-rule="evenodd" d="M0 0H64V64H0Z M54 41A13 13 0 1 0 28 41A13 13 0 1 0 54 41Z"/>
+    </clipPath>
   </defs>
-  <circle class="dot" cx="27" cy="27" r="16" mask="url(#orange-gap)"/>
+  <circle class="dot" cx="27" cy="27" r="16" clip-path="url(#orange-gap)"/>
   <circle class="dot-orange" cx="41" cy="41" r="11"/>
 </svg>

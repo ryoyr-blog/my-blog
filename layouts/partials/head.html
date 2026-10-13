@@ -101,6 +101,8 @@
     src="{{ $jsAppearance.RelPermalink }}"
     integrity="{{ $jsAppearance.Data.Integrity }}"></script>
   {{ $enableA11y := .Site.Params.enableA11y | default false }}
+  {{ $jsColorscheme := resources.Get "js/colorscheme.js" | resources.Minify | resources.Fingerprint $alg }}
+  <script src="{{ $jsColorscheme.RelPermalink }}" integrity="{{ $jsColorscheme.Data.Integrity }}"></script>
   {{ if $enableA11y }}
     {{ $jsA11y := resources.Get "js/a11y.js" | resources.Minify | resources.Fingerprint $alg }}
     <script src="{{ $jsA11y.RelPermalink }}" integrity="{{ $jsA11y.Data.Integrity }}"></script>

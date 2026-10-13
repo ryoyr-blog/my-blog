@@ -26,6 +26,15 @@
         <span class="appearance-icon appearance-icon--sun">{{ partial "icon.html" "sun" }}</span>
       </button>
     {{ end }}
+    <details class="colorscheme-menu">
+      <summary class="site-tool" aria-label="カラースキームを選ぶ" title="カラースキーム">{{ partial "icon.html" "palette" }}</summary>
+      <div class="colorscheme-options" role="group" aria-label="カラースキーム">
+        <p>:colorscheme</p>
+        <button type="button" data-scheme="default" aria-pressed="true">Default</button>
+        <button type="button" data-scheme="kanagawa" aria-pressed="false">Kanagawa</button>
+        <button type="button" data-scheme="tokyonight" aria-pressed="false">Tokyo Night</button>
+      </div>
+    </details>
     <details class="site-menu md:hidden">
       <summary aria-label="メニューを開く">{{ partial "icon.html" "bars" }}</summary>
       <nav aria-label="Mobile navigation">
