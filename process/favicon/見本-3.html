@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>見本 3</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Noto+Sans+JP:wght@400;700&display=swap"><style>
+/* 一列の作業メモ。絵は整数倍で、ぼかさず表示(~/game/art/雷の使い手/制作過程.html と同じ見た目) */
+:root{--bg:#eef0f4;--fg:#1d2230;--muted:#5a6275;--panel:#3c404e;--gold:#a8820f;--blue:#2b5fb8;
+--display:"DotGothic16",monospace;--body:"Noto Sans JP",system-ui,sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15171e;--fg:#e6e8ee;--muted:#9aa2b4;--panel:#3c404e;--gold:#e0b93a;--blue:#7aa6f0;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15171e;--fg:#e6e8ee;--muted:#9aa2b4;--panel:#3c404e;--gold:#e0b93a;--blue:#7aa6f0;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);line-height:1.7;margin:0}
+main{max-width:860px;margin:0 auto;padding-inline:16px;padding-block:32px 48px;display:grid;gap:40px}
+h1,h2{font-family:var(--display);font-weight:400;text-wrap:balance;margin:0}
+h1{font-size:1.9rem}h2{font-size:1.3rem}
+section{display:grid;gap:12px}
+p{margin:0;max-width:65ch}.muted{color:var(--muted);font-size:.92rem}
+figure{margin:0;background:var(--panel);border-radius:6px;overflow-x:auto}
+figure img{display:block;image-rendering:pixelated;max-width:100%;height:auto;margin:0 auto}
+/* 絵の説明(figcaption)は、暗い枠の上でも読めるように白にする(一覧の外に置いた1枚の絵や GIF も) */
+figure figcaption{padding:2px 6px 0;font-family:var(--display);color:#e6e8ee;font-size:.9rem;line-height:1.7;text-shadow:0 0 3px #000,0 0 3px #000}
+ul{margin:0;padding-left:1.2em}li{max-width:65ch}
+.ok{color:var(--blue)}.ng{color:var(--gold)}
+.block{display:grid;gap:10px;margin-top:6px}
+.block h3{font-family:var(--display);font-weight:400;font-size:1.05rem;margin:0}
+/* 絵は1マス=横幅の1/3。1枚・2枚のときも同じ大きさのまま中央にそろえる */
+.gallery{display:flex;flex-wrap:wrap;justify-content:center;gap:0;border-radius:6px;overflow:hidden;background:var(--panel)}
+.gallery figure{flex:0 0 calc(100%/3);min-width:0;position:relative;justify-items:center;border-radius:0;overflow:visible;align-content:start;display:grid;align-items:center}
+@media (max-width:520px){.gallery figure{flex-basis:100%}}
+.gallery figcaption{position:static;justify-self:start;padding:2px 6px 0;font-family:var(--display);color:#e6e8ee;font-size:.9rem;line-height:1.7;text-shadow:0 0 3px #000,0 0 3px #000}
+/* 絵の下にも、上の見出し(figcaption)と同じ高さの余白を入れ、絵が枠の下端に付かないようにする */
+.gallery figure{padding-bottom:calc(.9rem * 1.7 + 2px)}
+.notes details summary{cursor:pointer;color:var(--muted);font-size:.85rem;margin-top:4px}
+.notes .extra.rows{display:grid;gap:10px}.notes .extra.rows figure{margin:0;padding:6px 0 0}.notes .extra.rows figcaption{color:#e6e8ee;font-size:.85rem;padding:0 8px}.notes .extra.rows img{max-width:100%;width:100%}
+.notes .extra{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.notes .extra img{max-width:min(100%,380px);height:auto;image-rendering:pixelated;background:var(--panel);border-radius:4px}
+.notes{list-style:none;padding:0;margin:0;display:grid;gap:14px;font-size:.92rem}
+.notes>li{max-width:none;padding-left:12px;border-left:3px solid color-mix(in srgb,var(--muted) 40%,transparent)}
+.notes .nh{font-weight:700;margin-bottom:2px}.notes .no{display:inline-block;min-width:3.6em;font-family:var(--display);font-weight:400;color:var(--blue)}
+.notes ul{list-style:none;padding:0;margin:0}.notes ul li{max-width:none;display:flex;gap:8px;align-items:baseline}
+.notes .tag{flex:none;font-size:.75rem;padding:0 6px;border-radius:4px;border:1px solid currentColor;line-height:1.5}
+.notes .tag.muted{color:var(--muted)}
+/* 透過した絵は、透過が分かるようにチェック(Aseprite と同じ灰色2色、1マスは絵の幅の 1/8 でドットの格子にそろう)に載せ、
+   絵の範囲が分かるように、絵の上の文字(番号・見出し)と同じ白の枠で囲む */
+img.clear{outline:1px solid #e6e8ee;outline-offset:0;background-color:#bfbfbf;
+  background-image:conic-gradient(#7f7f7f 90deg,#bfbfbf 90deg 180deg,#7f7f7f 180deg 270deg,#bfbfbf 270deg);background-size:var(--check,25% 25%)}
+/* 正方形でない絵は、マスが正方形になるように --check(2マス分の大きさ)を style で渡す */
+/* 文章・コード:変更前後を横に並べる、表、行の差分 */
+.cols{display:grid;grid-template-columns:repeat(var(--n,2),minmax(0,1fr));gap:8px}
+@media (max-width:640px){.cols{grid-template-columns:1fr}}
+.cols>div{display:grid;gap:4px;align-content:start;min-width:0}.cols .cap{font-family:var(--display);font-size:.9rem}
+pre{margin:0;padding:10px 12px;background:color-mix(in srgb,var(--panel) 10%,var(--bg));border:1px solid color-mix(in srgb,var(--muted) 30%,transparent);border-radius:6px;overflow-x:auto;font-size:.85rem;line-height:1.6;white-space:pre-wrap;word-break:break-word}
+table{border-collapse:collapse;font-size:.92rem;width:100%}th,td{border:1px solid color-mix(in srgb,var(--muted) 35%,transparent);padding:4px 8px;text-align:left;vertical-align:top}
+th{background:color-mix(in srgb,var(--panel) 12%,var(--bg))}.tablewrap{overflow-x:auto}
+pre.diff .add{background:color-mix(in srgb,#2f9e44 22%,transparent);display:block}pre.diff .del{background:color-mix(in srgb,#e03131 20%,transparent);display:block;text-decoration:line-through}
+pre.diff .hunk{color:var(--muted);display:block}
+</style><style>html,body{margin:0}main{max-width:none;margin:0;padding:8px}</style></head>
+<body><main><section><div style="display:flex;align-items:center;flex-wrap:wrap;gap:12px;padding:14px;background:#fff;border-radius:6px;color:#17171b"><span style="display:inline-flex;align-items:center;gap:8px;margin-right:20px">16px <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAA50lEQVR4AaXBMYqDQABA0b+DIjKt2gSxFEuZE9l4g1SpAwsptrfxRGIZLEXSqK2IWOxuQGGQBAO+9/X7jwMEBxm8URYDTT3x5AcWsZK8YrBR3UfyrKXvZnSOa5KkHmFkoxNoqvvI7fqg72a2+m7mdn1Q3Ud0Ak2etezJsxadYFEWA303s6fvZspiYCVYNPXEp5p6YiU4SLDwA4tP+YHFSrCIlcRxTfY4rkmsJCuBJkk99iSph06gCSOb8+WE45psOa7J+XIijGx0BhthZPP9E1AWA0098eQHFrGSvGLwRqwksZLsERz0B0A1RZHFs+CIAAAAAElFTkSuQmCC" width="16" height="16" style="image-rendering:auto;max-width:none" alt="3の16px表示"></span><span style="display:inline-flex;align-items:center;gap:8px;margin-right:20px">32px <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAB2ElEQVR4AcXBoU7kUBSA4X9PJpn0iEmzAkOayqavMGJURdWKfQQEb4BCo3gDBI+AQFVUjRhHkE1l02AQpJmE09Tc3cVubmcGaNLv+/HnH2YkzEyYmTAzYWYLPsHMsdvuqaueuuoxc3xQFZI0IEkD1psVqsKpFpzAzFEWHWXRYeb4n5nj+emd56d3Hh/eyPKQLA9RFY5ZcETbDNzfvdI2A6cwczw+vPH89M7F5RlRvOQQ4YC2Gbi9eaFtBj6rbQZub15om4FDhBFmjvu7V8wcX2XmuL97xcwxRhhRFh1tM/BdbTNQFh1jBA8zR1l0TKUsOswcPoLHbrvHzDEVM8duu8dH8KirnqnVVY+P4FFXPVOrqx4fwcPMMTUzh48wM8FDVZiaquAjeCRpwNSSNMBH8EjSgKklaYCP4LHerFAVpqIqrDcrfAQPVSHLQ6aS5SGqgo8wIstDonjJd0XxkiwPGSOMUBUuLs9QFb5KVbi4PENVGCMcEMVLrq7PieIlnxXFS66uz4niJYcsOCKKl1xdn1MWHWXRYeY4RFXI8pAsD1EVjllwAlXh1++fZHnIbrunrnrqqsfM8UFVSNKAJA1Yb1aoCqda8AmqQpaHZHnIVISZCTMTZibM7C+LQ60+Gjgh/AAAAABJRU5ErkJggg==" width="32" height="32" style="image-rendering:auto;max-width:none" alt="3の32px表示"></span></div></section></main><script>
+// 並べたGIFを同時に始める(長さは最後のコマを延ばしてそろえておく)。見えたときにも始め直す
+(()=>{const restart=g=>{const imgs=[...g.querySelectorAll('img[src^="data:image/gif"]')];const srcs=imgs.map(i=>i.src);imgs.forEach(i=>i.src='');requestAnimationFrame(()=>imgs.forEach((i,k)=>i.src=srcs[k]))};
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)restart(e.target)}),{threshold:0.3});
+document.querySelectorAll('.gallery').forEach(g=>io.observe(g));})();
+</script><script>(()=>{const post=()=>parent.postMessage({ppHeight:Math.ceil(document.body.getBoundingClientRect().height)},'*');
+addEventListener('load',post);new ResizeObserver(post).observe(document.body)})()</script></body></html>

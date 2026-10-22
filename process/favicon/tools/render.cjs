@@ -2,10 +2,10 @@
 const fs=require('node:fs'),path=require('node:path');
 const {PNG}=require(process.env.PNGJS_MODULE||'pngjs');
 const root=path.resolve(__dirname,'..');
-const versions=JSON.parse(fs.readFileSync(path.join(root,'steps/versions.json')));
+const versions=JSON.parse(fs.readFileSync(path.join(root,'versions.json')));
 for(const v of versions.filter(v=>v.n>1))for(const dark of [false,true])for(const size of [16,32,512]){
  const suffix=(size===512?'':`-${size}`)+(dark?'-dark':'');
- const output=path.join(root,'steps',`${v.n}${suffix}.png`);
+ const output=path.join(root,`${v.n}${suffix}.png`);
  if(fs.existsSync(output))continue;
  const png=new PNG({width:size,height:size});
  for(let y=0;y<size;y++)for(let x=0;x<size;x++){
