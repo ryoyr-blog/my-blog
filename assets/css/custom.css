@@ -26,15 +26,16 @@ html.dark {
   --lab-orange: #e39962;
 }
 
-/* Palettes adapted from rebelot/kanagawa.nvim and folke/tokyonight.nvim. */
-html.dark[data-colorscheme="kanagawa"] {
-  --lab-paper: #1f1f28;
+/* Dashboard: ~/dotfiles/wezterm/dashboard/backend.py and work-status/panel.py.
+   Tokyo Night: folke/tokyonight.nvim. */
+html.dark[data-colorscheme="dashboard"] {
+  --lab-paper: #0f0f14;
   --lab-ink: #dcd7ba;
-  --lab-secondary: #c8c093;
-  --lab-muted: #a9a799;
-  --lab-line: #363646;
-  --lab-soft: #2a2a37;
-  --lab-violet: #957fb8;
+  --lab-secondary: #a6a69c;
+  --lab-muted: #a6a69c;
+  --lab-line: #2a2a37;
+  --lab-soft: #16161d;
+  --lab-violet: #7e9cd8;
   --lab-orange: #e6c384;
   --lab-cube-ink: var(--lab-ink);
 }
@@ -51,15 +52,15 @@ html.dark[data-colorscheme="tokyonight"] {
   --lab-cube-ink: var(--lab-ink);
 }
 
-html:not(.dark)[data-colorscheme="kanagawa"] {
-  --lab-paper: #f2ecbc;
+html:not(.dark)[data-colorscheme="dashboard"] {
+  --lab-paper: #f6f5ef;
   --lab-ink: #545464;
-  --lab-secondary: #43436c;
+  --lab-secondary: #716e61;
   --lab-muted: #716e61;
-  --lab-line: #d5cea3;
-  --lab-soft: #e5ddb0;
-  --lab-violet: #624c83;
-  --lab-orange: #836f4a;
+  --lab-line: #d8d5ca;
+  --lab-soft: #eeece3;
+  --lab-violet: #4d699b;
+  --lab-orange: #b0781a;
   --lab-cube-ink: var(--lab-ink);
 }
 

@@ -1,17 +1,18 @@
 (() => {
   const root = document.documentElement;
-  const schemes = ['default', 'kanagawa', 'tokyonight'];
+  const schemes = ['default', 'dashboard', 'tokyonight'];
   const read = () => {
     try { return localStorage.getItem('colorscheme'); } catch { return null; }
   };
   const saved = read();
-  const legacy = { 'kanagawa-lotus': 'kanagawa', 'tokyonight-day': 'tokyonight' };
+  const legacy = { 'kanagawa': 'dashboard', 'kanagawa-lotus': 'dashboard', 'tokyonight-day': 'tokyonight' };
   root.dataset.colorscheme = legacy[saved] || (schemes.includes(saved) ? saved : 'default');
   if (legacy[saved]) {
-    root.classList.remove('dark');
+    const lightOnly = saved === 'kanagawa-lotus' || saved === 'tokyonight-day';
+    if (lightOnly) root.classList.remove('dark');
     try {
       localStorage.setItem('colorscheme', root.dataset.colorscheme);
-      localStorage.setItem('appearance', 'light');
+      if (lightOnly) localStorage.setItem('appearance', 'light');
     } catch {}
   }
 
